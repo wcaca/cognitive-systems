@@ -20,6 +20,7 @@ Agent harness = 让 agent 跑起来的系统。它不是 agent 本身，而是 a
 - [`cross-cutting-judgments.md`](./cross-cutting-judgments.md) — 跨维度判断
 - [`consistency-governance.md`](./consistency-governance.md) — **v0.2** 行为一致性治理
 - [`audit-protocols.md`](./audit-protocols.md) — **v0.2** 行为审计协议
+- [`cron-as-system-mirror.md`](./cron-as-system-mirror.md) — **v0.2.1** cron 作为系统镜子（5 层依赖 + 反模式 + 模式 + 开放问题）
 - [`evolution.md`](./evolution.md) — 这个体系怎么演进
 
 ## 一句话总结
