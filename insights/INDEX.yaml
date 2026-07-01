@@ -1,3 +1,33 @@
+name: benchmark-baseline-v0.10
+path: insights/benchmark-baseline-v0.10.md
+created: 2026-07-01
+scenario: benchmark-baseline
+version: v0.10
+status: completed
+purpose: v0.5.1 protocol 第一次落地 - 2 prototype 正式评分
+model_tested: MiniMax-M3
+samples:
+  - name: dna-software-replication
+    level: 4.5
+    level_label: L4-L5 边界
+    four_dim_avg: 4.0
+    path: insights/dna-software-replication/benchmark-v0.10.md
+  - name: ecosystem-software-self-repair
+    level: 4.0
+    level_label: L4
+    four_dim_avg: 3.75
+    path: insights/ecosystem-software-self-repair/benchmark-v0.10.md
+key_finding: 枢轴极简性是 L4→L5 跨越关键
+next_steps:
+  - v0.11: 加第 3 样本
+  - v0.12: 多模型对比 (M3 vs GPT-4 vs Claude)
+  - v0.13: anti-leakage probe
+  - v0.14: 同 prompt 多次跑稳定性
+links:
+  protocol: 80-meta/llm-insight-evaluation-protocol.md
+  benchmark_seed: 80-meta/llm-insight-benchmark.md
+  rubric: 80-meta/insight-completion-rubric.md
+
 name: ecosystem-software-self-repair
 path: insights/ecosystem-software-self-repair/
 created: 2026-07-01
@@ -12,6 +42,7 @@ layers:
   artifacts:
     - type: doc
       path: insights/ecosystem-software-self-repair/artifacts/article.md
+benchmark_v0_10: insights/ecosystem-software-self-repair/benchmark-v0.10.md
 core_quote: "生态系统和软件系统都依靠'自我修复 / 自稳态机制'在没有中央控制的情况下保持平衡"
 links:
   research_method: 80-meta/research-method.md
@@ -36,6 +67,7 @@ layers:
   artifacts:
     - type: doc
       path: insights/dna-software-replication/artifacts/article.md
+benchmark_v0_10: insights/dna-software-replication/benchmark-v0.10.md
 core_quote: "DNA 双螺旋和软件架构中的'双视图 / 多副本'本质是同一种系统——冗余副本 + 镜像校验 + 冲突解决 + 半保留同步"
 links:
   to_insight_framework: 80-meta/insight-to-work.md
