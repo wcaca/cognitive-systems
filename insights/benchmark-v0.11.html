@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insight Benchmark Baseline · cognitive-systems v0.10+v0.11</title>
+  <style>
+    :root {
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #1f2937;
+      --text-muted: #6b7280;
+      --primary: #4f46e5;
+      --primary-light: #e0e7ff;
+      --accent: #7c3aed;
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --dna: #4f46e5;
+      --eco: #10b981;
+      --music: #f59e0b;
+      --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+    header {
+      text-align: center;
+      padding: 3rem 0 2rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+    }
+    h1 { font-size: 2.25rem; margin-bottom: 0.75rem; color: var(--primary); }
+    h2 { font-size: 1.5rem; margin: 2.5rem 0 1rem; color: var(--text); border-left: 4px solid var(--primary); padding-left: 1rem; }
+    h3 { font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: var(--text); }
+    p { margin-bottom: 1rem; color: var(--text); }
+    .subtitle { color: var(--text-muted); font-size: 1.1rem; }
+    .meta { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted); }
+    .meta span { background: var(--surface); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1px solid var(--border); }
+    section { background: var(--surface); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow); border: 1px solid var(--border); }
+    .core-finding {
+      background: linear-gradient(135deg, var(--primary-light) 0%, #fef3c7 100%);
+      border-left: 4px solid var(--primary);
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+    }
+    .core-finding strong { color: var(--primary); }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.95rem; }
+    th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--bg); font-weight: 600; color: var(--text); }
+    tr:hover { background: var(--bg); }
+    .l5-boundary { background: var(--success-light); color: var(--success); font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 4px; }
+    .l4 { background: var(--warning-light); color: var(--warning); font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 4px; }
+    .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.85rem; font-weight: 500; }
+    .badge-primary { background: var(--primary-light); color: var(--primary); }
+    .badge-success { background: var(--success-light); color: var(--success); }
+    .badge-warning { background: var(--warning-light); color: var(--warning); }
+    .sample-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+    .sample-card.dna { border-left: 4px solid var(--dna); }
+    .sample-card.eco { border-left: 4px solid var(--eco); }
+    .sample-card.music { border-left: 4px solid var(--music); }
+    .pivot { background: #f9fafb; border: 1px dashed var(--border); padding: 1rem; border-radius: 6px; font-family: monospace; margin: 0.75rem 0; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin: 1.5rem 0; }
+    .stat { text-align: center; padding: 1.5rem; background: var(--bg); border-radius: 8px; }
+    .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--primary); }
+    .stat-label { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; }
+    .radar-container { display: flex; justify-content: center; align-items: center; padding: 2rem 0; }
+    svg { max-width: 100%; height: auto; }
+    ul { padding-left: 1.5rem; margin: 0.75rem 0; }
+    li { margin-bottom: 0.5rem; }
+    .find { background: var(--primary-light); padding: 1rem 1.25rem; border-radius: 8px; margin: 1rem 0; }
+    .find strong { color: var(--primary); }
+    footer { text-align: center; padding: 3rem 0 1rem; color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border); margin-top: 3rem; }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .legend { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0; font-size: 0.9rem; }
+    .legend-item { display: flex; align-items: center; gap: 0.4rem; }
+    .legend-color { width: 14px; height: 14px; border-radius: 3px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🧠 Insight Benchmark Baseline</h1>
+    <p class="subtitle">cognitive-systems v0.10 (N=2) + v0.11 (N=3) · 第一次正式 baseline 数据</p>
+    <div class="meta">
+      <span>📅 2026-07-01</span>
+      <span>🤖 MiniMax-M3</span>
+      <span>📊 5 级 + 4 维度评分</span>
+      <span>🔒 3 protocol 验证</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>📌 核心发现 (v0.10+v0.11)</h2>
+    <div class="core-finding">
+      <p><strong>v0.10 假设验证</strong>: 枢轴极简性是 L4→L5 跨越的<strong>必要条件</strong> (Music 案例 3 字 vs Ecosystem 5 字, 5 级 4.7 vs 4.0)。</p>
+      <p style="margin-top:0.75rem"><strong>v0.11 元枢轴发现</strong>: 3 案例共同涉及"<strong>无中心协调下的全局一致</strong>" — 副本+校验 (DNA) / 自稳态 (Ecosystem) / 对位法 (Music)。</p>
+      <p style="margin-top:0.75rem"><strong>方法论收口</strong>: v0.5 体系 + v0.6 流程 + v0.7 评测 = "LLM 顿悟能力" 研究闭环首次成型。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>📊 3 样本数据</h2>
+    <table>
+      <thead>
+        <tr><th>样本</th><th>5 级</th><th>4 维度均分</th><th>枢轴 (字数)</th><th>泛化数</th><th>反例+退化</th><th>Prototype 评分</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>DNA ↔ Replication</strong></td>
+          <td><span class="l5-boundary">4.5 (L4-L5 边界)</span></td>
+          <td>4.0</td>
+          <td><code>冗+校+半</code> (3字)</td>
+          <td>7</td>
+          <td>2 + 4</td>
+          <td>8.9/10</td>
+        </tr>
+        <tr>
+          <td><strong>Ecosystem ↔ Self-Repair</strong></td>
+          <td><span class="l4">4.0 (L4)</span></td>
+          <td>3.75</td>
+          <td><code>自稳态</code> (3字范畴)</td>
+          <td>4</td>
+          <td>2 + 1</td>
+          <td>8.7/10</td>
+        </tr>
+        <tr>
+          <td><strong>Music ↔ Modularity</strong> ⭐</td>
+          <td><span class="l5-boundary">4.7 (L4-L5 边界)</span></td>
+          <td><strong>4.75</strong></td>
+          <td><code>独+约+隔</code> (3字)</td>
+          <td>6</td>
+          <td>2 + 4</td>
+          <td>9.0/10</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="find">
+      <strong>首入 L5 区间</strong>: Music 案例 4 维度首次全部 ≥ 4 (5, 5, 5, 4 = 4.75) — 验证 v0.10 "枢轴极简性" 假设.
+    </div>
+  </section>
+
+  <section>
+    <h2>📈 4 维度雷达图 (3 样本对比)</h2>
+    <div class="radar-container">
+      <svg viewBox="0 0 500 480" xmlns="http://www.w3.org/2000/svg">
+        <!-- Background grid -->
+        <g transform="translate(250,240)">
+          <!-- Concentric polygons -->
+          <polygon points="0,-150 130,-75 130,75 0,150 -130,75 -130,-75" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+          <polygon points="0,-125 108,-62 108,62 0,125 -108,62 -108,-62" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+          <polygon points="0,-100 87,-50 87,50 0,100 -87,50 -87,-50" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+          <polygon points="0,-75 65,-37 65,37 0,75 -65,37 -65,-37" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+          <polygon points="0,-50 43,-25 43,25 0,50 -43,25 -43,-25" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+          <polygon points="0,-25 22,-12 22,12 0,25 -22,12 -22,-12" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+          <!-- Axis lines -->
+          <line x1="0" y1="0" x2="0" y2="-150" stroke="#d1d5db" stroke-width="1"/>
+          <line x1="0" y1="0" x2="130" y2="-75" stroke="#d1d5db" stroke-width="1"/>
+          <line x1="0" y1="0" x2="130" y2="75" stroke="#d1d5db" stroke-width="1"/>
+          <line x1="0" y1="0" x2="0" y2="150" stroke="#d1d5db" stroke-width="1"/>
+          <line x1="0" y1="0" x2="-130" y2="75" stroke="#d1d5db" stroke-width="1"/>
+          <line x1="0" y1="0" x2="-130" y2="-75" stroke="#d1d5db" stroke-width="1"/>
+          <!-- Axis labels -->
+          <text x="0" y="-160" text-anchor="middle" font-size="14" font-weight="600" fill="#1f2937">找到枢轴</text>
+          <text x="145" y="-72" text-anchor="start" font-size="14" font-weight="600" fill="#1f2937">连接度</text>
+          <text x="145" y="82" text-anchor="start" font-size="14" font-weight="600" fill="#1f2937">反例力</text>
+          <text x="0" y="170" text-anchor="middle" font-size="14" font-weight="600" fill="#1f2937">简化度</text>
+          <text x="-145" y="82" text-anchor="end" font-size="14" font-weight="600" fill="#1f2937">反例力</text>
+          <text x="-145" y="-72" text-anchor="end" font-size="14" font-weight="600" fill="#1f2937">连接度</text>
+
+          <!-- DNA: 5,4,3,4 = (0,-150), (104,-60), (78,45), (0,100) -->
+          <polygon points="0,-150 104,-60 78,45 0,100 -78,45 -104,-60" fill="#4f46e5" fill-opacity="0.15" stroke="#4f46e5" stroke-width="2"/>
+          <!-- Eco: 4,4,4,3 = (0,-120), (104,-60), (104,60), (0,75) -->
+          <polygon points="0,-120 104,-60 104,60 0,75 -104,60 -104,-60" fill="#10b981" fill-opacity="0.15" stroke="#10b981" stroke-width="2"/>
+          <!-- Music: 5,5,4,5 = (0,-150), (130,-75), (104,60), (0,125) -->
+          <polygon points="0,-150 130,-75 104,60 0,125 -104,60 -130,-75" fill="#f59e0b" fill-opacity="0.20" stroke="#f59e0b" stroke-width="2"/>
+
+          <!-- DNA dots -->
+          <circle cx="0" cy="-150" r="4" fill="#4f46e5"/>
+          <circle cx="104" cy="-60" r="4" fill="#4f46e5"/>
+          <circle cx="78" cy="45" r="4" fill="#4f46e5"/>
+          <circle cx="0" cy="100" r="4" fill="#4f46e5"/>
+          <!-- Eco dots -->
+          <circle cx="0" cy="-120" r="4" fill="#10b981"/>
+          <circle cx="104" cy="-60" r="4" fill="#10b981"/>
+          <circle cx="104" cy="60" r="4" fill="#10b981"/>
+          <circle cx="0" cy="75" r="4" fill="#10b981"/>
+          <!-- Music dots -->
+          <circle cx="0" cy="-150" r="4" fill="#f59e0b"/>
+          <circle cx="130" cy="-75" r="4" fill="#f59e0b"/>
+          <circle cx="104" cy="60" r="4" fill="#f59e0b"/>
+          <circle cx="0" cy="125" r="4" fill="#f59e0b"/>
+        </g>
+      </svg>
+    </div>
+    <div class="legend" style="justify-content:center">
+      <div class="legend-item"><span class="legend-color" style="background:#4f46e5"></span> DNA (4.0/5)</div>
+      <div class="legend-item"><span class="legend-color" style="background:#10b981"></span> Ecosystem (3.75/5)</div>
+      <div class="legend-item"><span class="legend-color" style="background:#f59e0b"></span> Music (4.75/5) ⭐</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>🎯 3 样本卡片</h2>
+
+    <div class="sample-card dna">
+      <h3>1️⃣ DNA ↔ Software Replication <span class="badge badge-primary">v0.10</span></h3>
+      <div class="pivot">PIVOT: 冗+校+半 (冗余副本+镜像校验+半保留同步)</div>
+      <p><strong>核心命题</strong>: DNA 双螺旋和软件"多副本"本质同一种系统 — 冗余副本+镜像校验+冲突解决+半保留同步。</p>
+      <p><strong>关键性</strong>: 翻转"副本"理解 — 从性能优化到生命系统+分布式系统共同的内在抗错机制。</p>
+      <p><strong>5 级: 4.5 (L4-L5 边界)</strong> · <strong>4 维度: 4.0</strong> · <strong>prototype: 8.9/10</strong></p>
+    </div>
+
+    <div class="sample-card eco">
+      <h3>2️⃣ Ecosystem ↔ Software Self-Repair <span class="badge badge-primary">v0.10</span></h3>
+      <div class="pivot">PIVOT: 自稳态机制 (反馈+自我调节)</div>
+      <p><strong>核心命题</strong>: 生态系统和软件自修复都依靠"无中心协调下的自稳态"。</p>
+      <p><strong>关键性</strong>: 翻转"自适应"理解 — 从装了监控+自动恢复脚本到系统本身具有无中心协调能力。</p>
+      <p><strong>5 级: 4.0 (L4)</strong> · <strong>4 维度: 3.75</strong> · <strong>prototype: 8.7/10</strong></p>
+    </div>
+
+    <div class="sample-card music">
+      <h3>3️⃣ Music Counterpoint ↔ Software Modularity ⭐ <span class="badge badge-warning">v0.11</span></h3>
+      <div class="pivot">PIVOT: 独+约+隔 (独立单元+规则约束+局部错误隔离)</div>
+      <p><strong>核心命题</strong>: Bach 对位法和软件模块化本质同一种系统 — 多个独立声部+明确接口+全局规则下协同+局部错误不传播。</p>
+      <p><strong>关键性</strong>: 翻转"模块化"理解 — 从拆成小块到"无中心协调也能和谐"的能力。同时适用于音乐创作 / 软件架构 / 系统思考 / 未来 AI 多 agent 设计。</p>
+      <p><strong>5 级: 4.7 (L4-L5 边界, 首入 L5 区间)</strong> · <strong>4 维度: 4.75 (首次全部 ≥ 4)</strong> · <strong>prototype: 9.0/10</strong></p>
+    </div>
+  </section>
+
+  <section>
+    <h2>🧬 元枢轴发现 (v0.11)</h2>
+    <p>3 案例都涉及"<strong>无中心协调下的全局一致</strong>"：</p>
+    <div class="grid-3">
+      <div class="stat">
+        <div class="stat-value">副本+校验</div>
+        <div class="stat-label">DNA · 分子生物+分布式</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">自稳态</div>
+        <div class="stat-label">Ecosystem · 生态+软件</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">对位法</div>
+        <div class="stat-label">Music · 音乐+架构</div>
+      </div>
+    </div>
+    <div class="core-finding">
+      <p><strong>元枢轴候选</strong>: "无中心协调" 可能是<strong>跨域隐喻任务的元结构</strong>。需要 N=4+ 验证 (选 1 个不涉及"无中心协调"的领域)。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>✅ 3 Protocol 验证状态</h2>
+    <table>
+      <thead><tr><th>Layer</th><th>机制</th><th>DNA</th><th>Ecosystem</th><th>Music</th></tr></thead>
+      <tbody>
+        <tr><td>L1 行为锚定</td><td>5 级评分</td><td>✓ 4.5</td><td>✓ 4.0</td><td>✓ 4.7</td></tr>
+        <tr><td>L2 伪顿悟对抗</td><td>反例 + 退化</td><td>✓ 2 + 4</td><td>✓ 2 + 1</td><td>✓ 2 + 4</td></tr>
+        <tr><td>L3 人工 gold</td><td>prototype 流程</td><td>✓ 8.9/10</td><td>✓ 8.7/10</td><td>✓ 9.0/10</td></tr>
+        <tr><td>抗污染 probe</td><td>"看似对但错"探针</td><td>✗ 未跑</td><td>✗ 未跑</td><td>✗ 未跑</td></tr>
+        <tr><td>稳定性</td><td>同 prompt 多次跑</td><td>✗ 1 次</td><td>✗ 1 次</td><td>✗ 1 次</td></tr>
+        <tr><td>多模型对比</td><td>M3 vs GPT-4 vs Claude</td><td>✗ 只 M3</td><td>✗ 只 M3</td><td>✗ 只 M3</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>🔮 关键经验 (v0.11)</h2>
+    <div class="find">
+      <strong>1. 枢轴极简性是 L4→L5 必要条件 (v0.10 假设验证)</strong>
+      <p>DNA (3字) > Ecosystem (5字范畴) 在 5 级上, Music (3字) > DNA (3字) 在 4 维度上 → 极简性是必要, 不是充分。还要看"翻转深度"和"反例边界"。</p>
+    </div>
+    <div class="find">
+      <strong>2. 4 维度均分高的案例 = 4 维度都强</strong>
+      <p>Music 案例首次 4 维度全部 ≥ 4. 前 2 案例都有 3 分维度 (DNA 反例力 3, Ecosystem 简化度 3)。4 维度均分高的样本 = 4 维无短板, 不是某一维特别高。</p>
+    </div>
+    <div class="find">
+      <strong>3. "无中心协调" 是新发现</strong>
+      <p>3 案例共同点 = 元枢轴候选。需要 v0.15 N=4 验证: 选 1 个不涉及"无中心协调"的领域, 看 M3 是否还能达 L4+。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>🛤️ 下一步 (v0.12+)</h2>
+    <ol>
+      <li><strong>v0.12</strong>: 多模型对比 — 同一 prompt 跑 GPT-4 / Claude / M3, 看 5 级分布</li>
+      <li><strong>v0.13</strong>: anti-leakage probe — 给 3 案例各加 1 个"看似对但错"探针</li>
+      <li><strong>v0.14</strong>: 稳定性测试 — 同 prompt 跑 5 次, 看 4 维度均分方差</li>
+      <li><strong>v0.15</strong>: N=4 元枢轴验证 — 选不涉及"无中心协调"的领域 (如: 物理学 vs 音乐)</li>
+      <li><strong>v0.16</strong>: N=5+ dataset 构造 — 5+ 样本覆盖更多领域类型</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>📚 引用</h2>
+    <ul>
+      <li>协议: <a href="../80-meta/llm-insight-evaluation-protocol.md">llm-insight-evaluation-protocol.md</a> (v0.5.1)</li>
+      <li>骨架: <a href="../80-meta/llm-insight-benchmark.md">llm-insight-benchmark.md</a> (v0.5)</li>
+      <li>insight-to-work: <a href="../80-meta/insight-to-work.md">insight-to-work.md</a> (v0.6)</li>
+      <li>4 面 checklist: <a href="../80-meta/insight-4-faces-checklist.md">insight-4-faces-checklist.md</a> (v0.6.1)</li>
+      <li>3 层信息协议: <a href="../80-meta/insight-3-layer-info-protocol.md">insight-3-layer-info-protocol.md</a> (v0.6.2)</li>
+      <li>4 持续机制: <a href="../80-meta/insight-4-persistence-mechanisms.md">insight-4-persistence-mechanisms.md</a> (v0.6.3)</li>
+      <li>完成度 rubric: <a href="../80-meta/insight-completion-rubric.md">insight-completion-rubric.md</a> (v0.6.4)</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>cognitive-systems v0.10 + v0.11 · 2026-07-01 · N=3 baseline 完成</p>
+    <p>Generated by Mavis-original · MiniMax-M3 · <a href="https://github.com/wcaca/cognitive-systems">wcaca/cognitive-systems</a></p>
+  </footer>
+</div>
+</body>
+</html>

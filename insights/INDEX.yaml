@@ -75,3 +75,31 @@ links:
   layers_protocol: 80-meta/insight-3-layer-info-protocol.md
   persistence: 80-meta/insight-4-persistence-mechanisms.md
   rubric: 80-meta/insight-completion-rubric.md
+
+name: music-software-architecture
+path: insights/music-software-architecture/
+created: 2026-07-01
+scenario: prototype-and-research
+version: v0.11
+status: completed
+total_score: 9.0/10
+threshold: 6.5 (prototype) / 8.5 (research) - BOTH PASSED
+purpose: v0.11 第 3 案例 - 验证 v0.10 枢轴极简性假设
+model_tested: MiniMax-M3
+layers:
+  layer_1: insights/music-software-architecture/core.md
+  layer_2: insights/music-software-architecture/faces.md
+  artifacts:
+    - type: doc
+      path: insights/music-software-architecture/articles/counterpoint-as-modularity.md
+benchmark_v0_11: insights/music-software-architecture/benchmark-v0.11.md
+benchmark_5_level: 4.7 (L4-L5 边界, 首入 L5 区间)
+benchmark_4_dim_avg: 4.75
+core_quote: "音乐对位法 (Bach 时代) 和软件模块化 (现代 CS) 本质是同一种系统——独立 + 规则约束 + 局部错误隔离"
+links:
+  benchmark_baseline: insights/benchmark-baseline-v0.10.md
+  benchmark_html: insights/benchmark-v0.11.html
+  faces_checklist: 80-meta/insight-4-faces-checklist.md
+  layers_protocol: 80-meta/insight-3-layer-info-protocol.md
+  persistence: 80-meta/insight-4-persistence-mechanisms.md
+  rubric: 80-meta/insight-completion-rubric.md
