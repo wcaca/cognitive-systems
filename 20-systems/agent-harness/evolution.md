@@ -327,7 +327,12 @@
 | v0.5.3 | 评分稳定性 (多人一致性 + prompt 变体) | 待启动 |
 | v0.5.4 | 跟现有 benchmark 的关系 | 待启动 |
 | v0.5.5 | 完整 benchmark v1 (可发布) | 待启动 |
-| v0.6 | insight-to-work 桥接机制 (顿悟 → 作品) | **当前** |
+| v0.6 | insight-to-work 桥接机制 (顿悟 → 作品) | v0.6 done |
+| v0.6.1 | 4 面 checklist 详细设计 | **当前** |
+| v0.6.2 | 3 层信息整合协议细化 | 待启动 |
+| v0.6.3 | 4 个持续机制的具体实现 | 待启动 |
+| v0.6.4 | 完成度多维度评分 rubric | 待启动 |
+| v0.6.5 | 端到端 prototype 实测 | 待启动 |
 | v0.7 | mavis harness 加 decision_log + 第一份月度 review | 待启动 |
 | v0.8 | LLM 能力边界研究（cron-mirror 第 2 层依赖展开）| 待启动 |
 | v0.9 | 意识研究（research-map 里排期 v0.4 的项，但 v0.4 用了"决策流程"，所以顺延）| 待启动 |
