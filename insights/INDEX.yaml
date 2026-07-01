@@ -1,0 +1,22 @@
+name: ecosystem-software-self-repair
+path: insights/ecosystem-software-self-repair/
+created: 2026-07-01
+scenario: prototype
+version: v0.1
+status: completed
+total_score: 8.7/10
+threshold: 6.5
+layers:
+  layer_1: insights/ecosystem-software-self-repair/core.md
+  layer_2: insights/ecosystem-software-self-repair/faces.md
+  artifacts:
+    - type: doc
+      path: insights/ecosystem-software-self-repair/artifacts/article.md
+core_quote: "生态系统和软件系统都依靠'自我修复 / 自稳态机制'在没有中央控制的情况下保持平衡"
+links:
+  research_method: 80-meta/research-method.md
+  to_insight_framework: 80-meta/insight-to-work.md
+  faces_checklist: 80-meta/insight-4-faces-checklist.md
+  layers_protocol: 80-meta/insight-3-layer-info-protocol.md
+  persistence: 80-meta/insight-4-persistence-mechanisms.md
+  rubric: 80-meta/insight-completion-rubric.md

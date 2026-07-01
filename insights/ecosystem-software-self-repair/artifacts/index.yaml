@@ -1,0 +1,45 @@
+# State Checkpoint · insight ecosystem-software-self-repair
+
+**Checkpoint**: 1
+**Time**: 2026-07-01
+**Insight**: ecosystem-software-self-repair
+**Scenario**: prototype (threshold 6.5)
+
+## Layer 1: ✓
+- 一句话清晰度: 10/10
+- 关键性翻转型: 9/10
+- 综合 Layer 1 评分: 9.0/10
+
+## Layer 2:
+| 面 | 完整 | 准确 | 应用 | 综合 |
+|---|---|---|---|---|
+| 历史 | ✓ | ✓ | ✓ | 9/10 |
+| 结构 | ✓ | ✓ | ✓ | 9/10 |
+| 应用 | ✓ | ✓ | ✓ | 9/10 |
+| 限制 | ✓ | ✓ | ✓ | 8/10 |
+
+Layer 2 评分（加权）: 8.7/10
+
+## Layer 3:
+- artifacts/article.md: 8.5/10 (doc artifact)
+
+Layer 3 评分: 8.5/10
+
+## 总分计算:
+0.2 × 9.0 + 0.5 × 8.7 + 0.3 × 8.5 = 1.8 + 4.35 + 2.55 = **8.7/10**
+
+## 完成判定
+- total: 8.7/10
+- prototype 阈值: 6.5
+- 科研阈值: 8.5
+- 通过状态: **✓**（prototype 通过，接近科研阈值）
+
+## 缺口清单
+1. [低] 限制面"误用风险"可以更系统（3 个风险有点少）
+2. [中] 缺制品 2/3（image 关系图 + code prototype）
+3. [低] 历史面"演化阶段"可以更细
+
+## 下一步
+- 暂不补缺口，当前整体质量足够 prototype 场景
+- 若用于科研，需要补制品 + 限制面深化
+- 总结已生成的完整 v0.6 prototype，作为 v0.6.5 验收证据
