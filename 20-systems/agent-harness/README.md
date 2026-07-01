@@ -18,6 +18,8 @@ Agent harness = 让 agent 跑起来的系统。它不是 agent 本身，而是 a
 - [`resident.md`](./resident.md) — 居民 agent 的能力要求
 - [`maintenance-dimensions.md`](./maintenance-dimensions.md) — 10 个维护维度详解
 - [`cross-cutting-judgments.md`](./cross-cutting-judgments.md) — 跨维度判断
+- [`consistency-governance.md`](./consistency-governance.md) — **v0.2** 行为一致性治理
+- [`audit-protocols.md`](./audit-protocols.md) — **v0.2** 行为审计协议
 - [`evolution.md`](./evolution.md) — 这个体系怎么演进
 
 ## 一句话总结
