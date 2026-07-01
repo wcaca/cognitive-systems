@@ -16,8 +16,9 @@
 - **v0.3 新增**：语境保存 + 趋势预判（context-preservation + context-snapshot-template + trend-prediction + evolution.md 升级为 8 维度）
 - **v0.4 新增**：决策流程设计（decision-flow-design 主文档 + evolution.md 每个版本加"决策流程回顾"段 = 把所有研究整合进统一框架）
 - **v0.5 起点**：LLM 顿悟能力评测骨架（`80-meta/llm-insight-benchmark.md` = 5 任务 + 4 维度 + 5 类开放问题；评测方式研究**不急着展开**，等协议研究透）
-- **总文件数**：约 33 个
-- **总 commit 数**：12
+- **v0.5.1**：评测协议 + 防污染（`80-meta/llm-insight-evaluation-protocol.md` = 3 层 protocol + 5 级评分锚定 + 6 个防污染机制 + prototype）
+- **总文件数**：约 34 个
+- **总 commit 数**：13
 - **公开性**：public，欢迎讨论与共建
 
 ## 仓库结构
@@ -48,6 +49,7 @@
 | **v0.3** | 2026-07（同日）| 语境保存 + 趋势预判（context-preservation + trend-prediction + 8 维度 evolution 模板） |
 | **v0.4** | 2026-07（同日）| 决策流程设计（4 阶段 + 4 不变量 + 3 杠杆 = 整合视图） |
 | **v0.5** | 2026-07 | LLM 顿悟能力评测（benchmark 骨架 + 评测方式研究，5 任务 + 4 维度） |
+| **v0.5.1** | 2026-07 | Protocol + 防污染（3 层组合 + 5 级行为锚定 + 6 个防污染机制） |
 | **v0.6** | 计划 | mavis harness 加 decision_log + 第一份月度 review |
 | **v0.7+** | 待定 | LLM/意识/跨方向交叉 |
 
