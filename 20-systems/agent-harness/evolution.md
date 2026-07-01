@@ -330,8 +330,8 @@
 | v0.6 | insight-to-work 桥接机制 (顿悟 → 作品) | v0.6 done |
 | v0.6.1 | 4 面 checklist 详细设计 | v0.6.1 done |
 | v0.6.2 | 3 层信息整合协议细化 | v0.6.2 done |
-| v0.6.3 | 4 个持续机制的具体实现 | **当前** |
-| v0.6.4 | 完成度多维度评分 rubric | 待启动 |
+| v0.6.3 | 4 个持续机制的具体实现 | v0.6.3 done |
+| v0.6.4 | 完成度多维度评分 rubric | **当前** |
 | v0.6.5 | 端到端 prototype 实测 | 待启动 |
 | v0.7 | mavis harness 加 decision_log + 第一份月度 review | 待启动 |
 | v0.8 | LLM 能力边界研究（cron-mirror 第 2 层依赖展开）| 待启动 |
