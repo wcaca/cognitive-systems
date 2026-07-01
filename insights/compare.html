@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v0.6.5 vs v0.7 · 真实材料对比 · cognitive-systems</title>
+  <style>
+    :root {
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --surface-2: #f9fafb;
+      --border: #e5e7eb;
+      --text: #1f2937;
+      --text-muted: #6b7280;
+      --primary: #4f46e5;
+      --primary-light: #e0e7ff;
+      --accent: #7c3aed;
+      --v1: #4f46e5;
+      --v2: #f59e0b;
+      --v1-light: #e0e7ff;
+      --v2-light: #fef3c7;
+      --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    /* Hero */
+    .hero { padding: 3rem 0 2rem; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+    .hero h1 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 0.5rem;
+    }
+    .hero .subtitle { color: var(--text-muted); font-size: 1rem; }
+    .hero .breadcrumb { font-size: 0.875rem; color: var(--primary); margin-bottom: 0.5rem; }
+    .hero .breadcrumb a { color: var(--primary); text-decoration: none; }
+
+    /* Section */
+    section { margin-bottom: 3.5rem; }
+    section h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+    section .section-sub {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      font-size: 0.9375rem;
+    }
+
+    /* Compare pairs */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 900px) {
+      .compare-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Column header */
+    .col-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.25rem;
+      border-radius: 12px 12px 0 0;
+      font-weight: 700;
+      font-size: 0.9375rem;
+    }
+    .col-header.v1 {
+      background: var(--v1-light);
+      color: var(--v1);
+      border: 1px solid var(--v1);
+      border-bottom: none;
+    }
+    .col-header.v2 {
+      background: var(--v2-light);
+      color: var(--v2);
+      border: 1px solid var(--v2);
+      border-bottom: none;
+    }
+    .col-tag {
+      padding: 0.125rem 0.5rem;
+      background: var(--surface);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: 1px solid currentColor;
+    }
+
+    /* Content card */
+    .content-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0 0 12px 12px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .content-card.v1-top { border-top: none; border-radius: 12px; }
+    .content-card pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: ui-monospace, "SF Mono", Monaco, Menlo, monospace;
+      font-size: 0.8125rem;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--surface-2);
+      padding: 1rem;
+      border-radius: 8px;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    .content-card h3 {
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .content-card h4 {
+      font-size: 0.9375rem;
+      margin: 1rem 0 0.5rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+    .content-card p {
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+    .content-card ul {
+      margin-left: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+    .content-card li {
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+    }
+    .content-card strong { color: var(--text); font-weight: 600; }
+
+    /* Summary table */
+    .summary-table {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .summary-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .summary-table th {
+      background: var(--surface-2);
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .summary-table td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9375rem;
+    }
+    .summary-table tr:last-child td { border-bottom: none; }
+    .summary-table .dimension { font-weight: 600; color: var(--text); width: 25%; }
+    .summary-table .v1-cell { background: rgba(79, 70, 229, 0.04); width: 37.5%; }
+    .summary-table .v2-cell { background: rgba(245, 158, 11, 0.04); width: 37.5%; }
+
+    /* Badge */
+    .badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge.good { background: #d1fae5; color: #065f46; }
+    .badge.warn { background: #fef3c7; color: #92400e; }
+
+    /* Gap */
+    .gap-card {
+      background: var(--surface);
+      border: 1px dashed var(--warning-border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .gap-card .gap-label {
+      font-size: 0.75rem;
+      color: #92400e;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .gap-card p { font-size: 0.875rem; color: var(--text); }
+
+    /* Footer */
+    footer {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+    footer a { color: var(--primary); text-decoration: none; }
+
+    /* Misc */
+    .quote {
+      background: var(--surface-2);
+      padding: 0.875rem 1rem;
+      border-radius: 8px;
+      border-left: 3px solid currentColor;
+      font-style: italic;
+      font-size: 0.875rem;
+      margin: 0.5rem 0;
+    }
+    .quote.v1 { color: var(--v1); }
+    .quote.v2 { color: var(--v2); }
+    .check { color: var(--success); font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="breadcrumb"><a href="INDEX.html">← 返回 insights/INDEX.html</a></div>
+      <h1>v0.6.5 vs v0.7 · 真实材料对比</h1>
+      <p class="subtitle">把两个 prototype 的 core.md / faces.md / article.md 真实内容并排展示。不是摘要对比，是真材实料的对比。</p>
+    </div>
+
+    <!-- Summary dimension comparison -->
+    <section>
+      <h2>维度对比速览</h2>
+      <p class="section-sub">先看分数，再看真实材料</p>
+      <div class="summary-table">
+        <table>
+          <thead>
+            <tr>
+              <th>维度</th>
+              <th>v0.6.5 · 生态↔软件自修复</th>
+              <th>v0.7 · DNA↔软件双视图</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="dimension">版本</td>
+              <td class="v1-cell">v0.6.5（认知系统仓内 v0.6 prototype）</td>
+              <td class="v2-cell">v0.7（认知系统仓内 M3 自测）</td>
+            </tr>
+            <tr>
+              <td class="dimension">Layer 1 核心</td>
+              <td class="v1-cell">9.0</td>
+              <td class="v2-cell">9.0</td>
+            </tr>
+            <tr>
+              <td class="dimension">Layer 2 4 面（加权）</td>
+              <td class="v1-cell">8.7</td>
+              <td class="v2-cell">8.7</td>
+            </tr>
+            <tr>
+              <td class="dimension">Layer 3 制品</td>
+              <td class="v1-cell">8.5</td>
+              <td class="v2-cell"><strong>9.0</strong></td>
+            </tr>
+            <tr>
+              <td class="dimension">总分</td>
+              <td class="v1-cell"><strong>8.7</strong></td>
+              <td class="v2-cell"><strong style="color: var(--v2);">8.9</strong></td>
+            </tr>
+            <tr>
+              <td class="dimension">通过的阈值</td>
+              <td class="v1-cell"><span class="badge good">prototype ✓</span></td>
+              <td class="v2-cell"><span class="badge good">prototype ✓</span> <span class="badge good">科研 ✓</span></td>
+            </tr>
+            <tr>
+              <td class="dimension">PIVOT echo 一致性</td>
+              <td class="v1-cell"><span class="check">✓</span>（未公开 trace，v0.6.5 prototype 实施时未强调）</td>
+              <td class="v2-cell"><span class="check">✓</span> 5/5（每步开始都 echo，commit message 含完整 trace）</td>
+            </tr>
+            <tr>
+              <td class="dimension">诚实暴露的缺口</td>
+              <td class="v1-cell">3 个（缺 image / code prototype）</td>
+              <td class="v2-cell">3 个（缺制品 2/3、误用风险深度、操作步骤可执行性）</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Layer 1: core.md 真实并排 -->
+    <section>
+      <h2>Layer 1 · core.md 真实并排</h2>
+      <p class="section-sub">每个 prototype 的"一句话核心 + 关键性 + Step 2 验证"完整内容</p>
+
+      <div class="compare-grid">
+        <div>
+          <div class="col-header v1">
+            <span>v0.6.5</span>
+            <span class="col-tag">core.md · 9.0</span>
+          </div>
+          <div class="content-card v1-top">
+<pre><strong># Insight: Ecosystem ↔ Software Self-Repair</strong>
+
+## Layer 1: 一句话核心
+
+<strong>Connection</strong>: 生态系统和软件系统都依靠"自我修复 / 自稳态机制"
+在没有中央控制的情况下保持平衡。
+
+<strong>关键性</strong>: 这一发现<em>翻转</em>了对"自适应"的理解——自适应不是
+"装了监控 + 自动恢复脚本"那么简单，而是系统本身具有
+"无中心协调也能维持稳态"的能力。这一发现同时适用于:
+  • 生态保护（如何设计"自我修复"的生态系统）
+  • 软件架构（如何借鉴生态原理设计 resilient 系统）
+  • 工程哲学（"自愈 vs 自控"的根本分歧）
+
+## 验证 (v0.6 Step 2)
+
+### 反例
+• 金融交易系统: 不能完全自修复，必须有审计 trail
+• 医疗信息系统: 不能完全自修复，必须有医生主导
+
+### 退化
+• 在"没有反馈信号"的情况下 connection 是否成立?
+  → 不成立 → 自修复依赖反馈
+
+### 泛化
+• 免疫系统、蚁群算法、区块链共识都有类似机制
+• 是<strong>普遍模式</strong>，不是巧合
+
+### 混淆检测
+• 是"相关"还是"因果"?
+  → 部分因果（共同机制） + 部分相关（具体表现差异）
+  → 不是简单映射，是"结构同构"
+• ✓ 验证通过</pre>
+          </div>
+        </div>
+
+        <div>
+          <div class="col-header v2">
+            <span>v0.7</span>
+            <span class="col-tag">core.md · 9.0</span>
+          </div>
+          <div class="content-card v1-top">
+<pre><strong># Insight: DNA ↔ Software Replication</strong>
+
+## Layer 1: 一句话核心
+
+<strong>Connection</strong>: DNA 双螺旋（生物学）和软件架构中的"双视图 / 多副本"
+（计算机科学）本质是同一种系统 ——
+<strong>冗余副本 + 镜像校验 + 冲突解决 + 半保留同步</strong>。
+
+<strong>关键性</strong>: 这一发现<em>翻转</em>了"副本"的传统理解 ——
+副本不是性能优化或备份冗余，而是<strong>生命系统和分布式系统都依赖的
+"内在抗错机制"</strong>。从此看出"副本"是分布式生命系统的共同特征，
+跟行业/介质无关。
+
+<strong>PIVOT</strong>（枢轴节点）: <strong>冗余 + 校验 + 半保留同步</strong> ——
+三个机制同时存在才能维持"无中心协调下的全局一致"。
+
+## Step 2: 验证
+
+### 反例
+• 单数据库主从复制但 read-after-write 一致性弱
+  → "副本"在此场景是性能优化，不是抗错机制
+• 区块链中"副本"还起到"信任"作用，不仅是抗错
+  → connection 是<strong>部分</strong>适用
+
+### 退化（哪些条件下 connection 失效）
+• 网络分区（副本间不可达）→ 失效
+• 冲突解决策略不一致 → 失效
+• 状态空间无限 → 失效
+• 物理损伤（如辐射改变 DNA） → 失效
+
+### 泛化
+• CRDT / Git / Paxos/Raft / Merkle tree / 抗体多样性
+• → <strong>普遍模式，不是孤立巧合</strong>
+
+### 混淆检测
+• 部分因果（共同的"冗余 + 校验"机制）
+  + 部分相关（具体实现差异）
+• 不是简单映射，是<strong>结构同构</strong>
+• ✓ 验证通过</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Layer 2: faces.md 历史面 -->
+    <section>
+      <h2>Layer 2 · 历史面</h2>
+      <p class="section-sub">起源 + 演化 + 类比（最低门槛）</p>
+      <div class="compare-grid">
+        <div>
+          <div class="col-header v1"><span>v0.6.5 历史面</span><span class="col-tag">9/10</span></div>
+          <div class="content-card v1-top">
+            <h4>起源</h4>
+            <ul>
+              <li><strong>1972</strong>: James Lovelock 提出盖亚假说</li>
+              <li><strong>1970s</strong>: 复杂系统理论成熟（SFI）</li>
+            </ul>
+            <h4>演化</h4>
+            <ul>
+              <li><strong>2001</strong>: IBM 提出 autonomic computing</li>
+              <li><strong>2010s</strong>: microservices + chaos engineering</li>
+              <li><strong>2020s</strong>: 自适应数据库（CockroachDB 自愈）</li>
+            </ul>
+            <h4>类比</h4>
+            <p class="quote v1">中医"调和"思想 vs 现代控制论 homeostasis。道家"无为而治" vs 集中控制 vs 自组织。</p>
+          </div>
+        </div>
+        <div>
+          <div class="col-header v2"><span>v0.7 历史面</span><span class="col-tag">8.7/10</span></div>
+          <div class="content-card v1-top">
+            <h4>起源</h4>
+            <ul>
+              <li><strong>1953</strong>: Watson & Crick 发现 DNA 双螺旋</li>
+              <li><strong>1958</strong>: Crick 提出中心法则</li>
+            </ul>
+            <h4>演化（4 阶段）</h4>
+            <ul>
+              <li><strong>1960s-70s</strong>: 遗传密码破译</li>
+              <li><strong>1980s-90s</strong>: PCR 技术</li>
+              <li><strong>2000s</strong>: 基因测序成本下降</li>
+              <li><strong>2011+</strong>: CRDT 形式化</li>
+            </ul>
+            <h4>类比</h4>
+            <p class="quote v2">抗体机制 vs 错误检测码 ECC。酶修复 vs 自动重试 + 事务回滚。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Layer 2: faces.md 结构面 -->
+    <section>
+      <h2>Layer 2 · 结构面</h2>
+      <p class="section-sub">上位 + 下位 + 平行（最低门槛）</p>
+      <div class="compare-grid">
+        <div>
+          <div class="col-header v1"><span>v0.6.5 结构面</span><span class="col-tag">9/10</span></div>
+          <div class="content-card v1-top">
+            <h4>上位</h4>
+            <p>复杂适应系统 (CAS)、自组织临界性、网络科学</p>
+            <h4>下位</h4>
+            <p>生态学机制（分解者、捕食-猎物）+ 软件技术（circuit breaker、retry、watchdog、load balancer）</p>
+            <h4>平行（4 个同构邻居）</h4>
+            <ul>
+              <li>免疫系统（识别威胁 + 响应 + 记忆）</li>
+              <li>蚁群算法（个体简单 + 集体智能）</li>
+              <li>区块链共识（去中心化 + 容错 + 自验证）</li>
+              <li>大脑神经网络（神经元 + 突触 + 学习）</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="col-header v2"><span>v0.7 结构面</span><span class="col-tag">9/10</span></div>
+          <div class="content-card v1-top">
+            <h4>上位</h4>
+            <p>分布式系统理论（Lamport / CAP 定理）、信息论（Shannon 冗余编码）、可靠性工程</p>
+            <h4>下位（5 个具体机制）</h4>
+            <ul>
+              <li>DNA: 每条链是另一条的镜像 + 互补配对</li>
+              <li>软件: 双数据库主从 / 多副本</li>
+              <li>git: 分支 + 合并 + conflict resolution</li>
+              <li>CRDT: 独立更新 + 最终收敛</li>
+              <li>Paxos/Raft: 多副本投票 → 一致性</li>
+            </ul>
+            <h4>平行（4 个同构邻居）</h4>
+            <ul>
+              <li>免疫系统抗体多样性</li>
+              <li>大脑神经网络冗余</li>
+              <li>生物种系多样性</li>
+              <li>MVCC（数据库事务多版本）</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Layer 2: faces.md 应用面 -->
+    <section>
+      <h2>Layer 2 · 应用面</h2>
+      <p class="section-sub">场景 + 反例 + 操作（最低门槛）</p>
+      <div class="compare-grid">
+        <div>
+          <div class="col-header v1"><span>v0.6.5 应用面</span><span class="col-tag">9/10</span></div>
+          <div class="content-card v1-top">
+            <h4>场景 1：微服务架构</h4>
+            <p>circuit breaker + chaos engineering → Netflix Chaos Monkey</p>
+            <h4>场景 2：自适应数据库</h4>
+            <p>自动分片 + 副本重建 + 共识 → CockroachDB / TiDB / Cassandra</p>
+            <h4>场景 3：CDN 自动故障转移</h4>
+            <p>健康检查 + DNS 切换 + 边缘缓存 → Cloudflare / Akamai</p>
+            <h4>反例</h4>
+            <p>金融交易系统 / 医疗系统 / 关键基础设施控制</p>
+            <h4>操作步骤（6 步）</h4>
+            <ol>
+              <li>识别"自修复可达"的边界</li>
+              <li>设计反馈回路（必须可观测）</li>
+              <li>加 circuit breaker 隔离失败</li>
+              <li>加 retry + backoff 恢复</li>
+              <li>加监控 + 告警</li>
+              <li>定期 chaos engineering 测试</li>
+            </ol>
+          </div>
+        </div>
+        <div>
+          <div class="col-header v2"><span>v0.7 应用面</span><span class="col-tag">8.7/10</span></div>
+          <div class="content-card v1-top">
+            <h4>场景 1：协同编辑（CRDT）</h4>
+            <p>Yjs / Automerge → Figma / Mattermost / Notion</p>
+            <h4>场景 2：分布式数据库</h4>
+            <p>Cassandra / CockroachDB / Spanner → Google Spanner 跨数据中心强一致</p>
+            <h4>场景 3：版本控制（git）</h4>
+            <p>分支 + 合并 + 冲突解决 → 全球开源生态</p>
+            <h4>反例</h4>
+            <p>强实时控制（自动驾驶）/ 法律/合规敏感 / 强一致性场景（银行）</p>
+            <h4>操作步骤（7 步）</h4>
+            <ol>
+              <li>识别"什么可以多副本"</li>
+              <li>选择副本同步策略（同步/异步/最终一致）</li>
+              <li>实现冲突检测（CRDT/vector clock/版本号）</li>
+              <li>实现冲突解决（LWW/优先级/人工）</li>
+              <li>设计恢复机制</li>
+              <li>监控副本一致性（lag metric）</li>
+              <li>定期 chaos engineering 测试</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Layer 2: faces.md 限制面 -->
+    <section>
+      <h2>Layer 2 · 限制面</h2>
+      <p class="section-sub">边界条件 + 失效场景 + 误用风险（最低门槛）</p>
+      <div class="compare-grid">
+        <div>
+          <div class="col-header v1"><span>v0.6.5 限制面</span><span class="col-tag">8/10</span></div>
+          <div class="content-card v1-top">
+            <h4>边界条件</h4>
+            <ul>
+              <li><strong>扰动在范围内</strong>: 局部失败 + 失败率 &lt; 阈值</li>
+              <li><strong>必须有反馈信号</strong>: 可观测的失败信号</li>
+              <li><strong>恢复时间 &lt; 用户等待时间</strong>: 恢复必须快</li>
+            </ul>
+            <h4>失效场景</h4>
+            <p>雪崩式 cascading failure / 生态崩溃 / cascade bug</p>
+            <h4>误用风险（3 个）</h4>
+            <ul>
+              <li>把"自修复"当成"不需要运维"</li>
+              <li>过度依赖自修复掩盖根本问题</li>
+              <li>自修复逻辑本身出错（Facebook 2021 BGP）</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="col-header v2"><span>v0.7 限制面</span><span class="col-tag">8.3/10</span></div>
+          <div class="content-card v1-top">
+            <h4>边界条件</h4>
+            <ul>
+              <li><strong>副本间网络可达</strong>: 不满足 → 脑裂风险</li>
+              <li><strong>冲突解决策略全局一致</strong>: 不满足 → 副本漂移</li>
+              <li><strong>状态空间有界</strong>: 不满足 → 状态爆炸</li>
+            </ul>
+            <h4>失效场景</h4>
+            <p>脑裂（split-brain）/ Cascading replication / State divergence</p>
+            <h4>误用风险（3 个）</h4>
+            <ul>
+              <li>用"多副本"作为"高可用"替代品</li>
+              <li>用"半保留同步"掩盖架构缺陷</li>
+              <li>误以为"副本 = 0 风险"（CAP 定理）</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Layer 3: article.md 引言 -->
+    <section>
+      <h2>Layer 3 · article.md 引言对比</h2>
+      <p class="section-sub">每个 prototype 的长文制品开头 — 看"我懂到哪"</p>
+      <div class="compare-grid">
+        <div>
+          <div class="col-header v1"><span>v0.6.5 article.md 引言</span><span class="col-tag">doc artifact · 8.5</span></div>
+          <div class="content-card v1-top">
+<pre><strong>引言</strong>
+
+生态学和软件工程看似无关，但深究起来，两个领域都在解决同一个问题:
+<strong>当系统被打扰时，怎么在没有中央控制的情况下恢复平衡？</strong>
+这种"自我修复 / 自稳态机制"是连接两者的枢轴节点。
+
+## 三个核心论点
+
+1. 自我修复不是"装了监控 + 自动恢复"那么简单
+   - 必须有冗余、负反馈、可观测
+2. 自适应系统的关键是"无中心协调" vs "集中控制"
+3. 借鉴生态原理设计 resilient 软件
+   - 7 个具体机制（多样性、分解者、捕食-猎物反馈...）</pre>
+          </div>
+        </div>
+        <div>
+          <div class="col-header v2"><span>v0.7 article.md 引言</span><span class="col-tag">doc artifact · 9.0</span></div>
+          <div class="content-card v1-top">
+<pre><strong>引言</strong>
+
+DNA 双螺旋是分子生物学的"中心法则"的物理基础。分布式多副本是
+计算机科学的"中心挑战"的工程答案。两个看似无关的领域都在解决
+<strong>同一个根本问题</strong>:
+
+<strong>当系统的不同部分必须"知道同一件事"的时候，谁来协调？</strong>
+
+DNA 的回答: 让每一链都是另一链的镜像，半保留复制。
+软件的回答: 让每个副本都是其他副本的镜像，半保留同步。
+
+这不是巧合，是<strong>结构性同构</strong>。
+
+## 三个核心论点
+
+1. "副本"是分布式生命系统的共同语言
+2. CRDT 是生命系统的软件实现
+3. 分布式生命系统的演化视角</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 缺口对比 -->
+    <section>
+      <h2>诚实暴露的缺口对比</h2>
+      <p class="section-sub">每个 prototype 在 artifacts/index.yaml 里都列了缺口</p>
+      <div class="compare-grid">
+        <div>
+          <div class="col-header v1"><span>v0.6.5 缺口（3 个）</span></div>
+          <div class="content-card v1-top">
+            <div class="gap-card">
+              <div class="gap-label">[中] 缺制品 2（image）</div>
+              <p>只做了 doc artifact，没做"4 面关系图"作为 image artifact</p>
+            </div>
+            <div class="gap-card">
+              <div class="gap-label">[低] 缺制品 3（code）</div>
+              <p>没做 circuit breaker reference implementation 作为 code prototype</p>
+            </div>
+            <div class="gap-card">
+              <div class="gap-label">[低] 限制面深度</div>
+              <p>"误用风险"只到 3 个具体场景，可扩展到 5 个</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="col-header v2"><span>v0.7 缺口（3 个）</span></div>
+          <div class="content-card v1-top">
+            <div class="gap-card">
+              <div class="gap-label">[中] 缺制品 2/3（image + code）</div>
+              <p>只做了 doc artifact，没做"副本同步模型图"或"LWW-Element-Map CRDT 实现"</p>
+            </div>
+            <div class="gap-card">
+              <div class="gap-label">[低] 限制面深度</div>
+              <p>"误用风险"只到 3 个场景</p>
+            </div>
+            <div class="gap-card">
+              <div class="gap-label">[低] 操作步骤可执行性</div>
+              <p>7 步写得详细但可执行性未实测</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Self-evaluation reflection -->
+    <section>
+      <h2>自评反思：M3 长程自测的方法论差异</h2>
+      <p class="section-sub">这次 v0.7 跟 v0.6.5 比，做对了什么、有什么不足</p>
+
+      <div class="summary-table">
+        <table>
+          <thead>
+            <tr>
+              <th>维度</th>
+              <th>v0.6.5（首次 prototype）</th>
+              <th>v0.7（M3 自测）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="dimension">PIVOT 显式化</td>
+              <td class="v1-cell">⚠ 没明确写出 PIVOT</td>
+              <td class="v2-cell"><strong class="check">✓</strong> core.md 第 1 段就标出 PIVOT</td>
+            </tr>
+            <tr>
+              <td class="dimension">PIVOT echo 显式</td>
+              <td class="v1-cell">⚠ 没在过程中显式 echo</td>
+              <td class="v2-cell"><strong class="check">✓</strong> 每步都 echo，commit message 含完整 trace</td>
+            </tr>
+            <tr>
+              <td class="dimension">4 面展开深度</td>
+              <td class="v1-cell">基本达标</td>
+              <td class="v2-cell"><strong>更深</strong>（5 个下位、4 个平行，比 v0.6.5 多）</td>
+            </tr>
+            <tr>
+              <td class="dimension">操作步骤具体性</td>
+              <td class="v1-cell">6 步</td>
+              <td class="v2-cell"><strong>7 步</strong>（更细）</td>
+            </tr>
+            <tr>
+              <td class="dimension">缺口诚实度</td>
+              <td class="v1-cell">3 个缺口（但都是低优）</td>
+              <td class="v2-cell">3 个缺口（加"操作步骤可执行性"作为低优）</td>
+            </tr>
+            <tr>
+              <td class="dimension">Layer 3 制品质量</td>
+              <td class="v1-cell">8.5（长文 1700 字）</td>
+              <td class="v2-cell"><strong>9.0</strong>（长文 2600 字，更深）</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.9375rem;">
+        <strong>核心差异</strong>：v0.7 在 v0.6.5 基础上，<strong>显式化了 PIVOT 和 PIVOT echo</strong>。前者没标出 PIVOT、没显式回响；后者两者都做了。这是 v0.6.3 4 个持续机制的真实落地。
+      </p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>
+        <a href="INDEX.html">← 返回 insights/INDEX.html</a> ·
+        <a href="https://github.com/wcaca/cognitive-systems">cognitive-systems</a> ·
+        v0.7 (c64dd97)
+      </p>
+      <p style="margin-top: 0.5rem;">
+        所有材料都是真实 prototype 文件 · 不是摘要
+      </p>
+    </footer>
+
+  </div>
+</body>
+</html>
