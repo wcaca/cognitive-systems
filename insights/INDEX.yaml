@@ -20,3 +20,26 @@ links:
   layers_protocol: 80-meta/insight-3-layer-info-protocol.md
   persistence: 80-meta/insight-4-persistence-mechanisms.md
   rubric: 80-meta/insight-completion-rubric.md
+
+name: dna-software-replication
+path: insights/dna-software-replication/
+created: 2026-07-01
+scenario: prototype-and-research
+version: v0.1
+status: completed
+total_score: 8.9/10
+threshold: 6.5 (prototype) / 8.5 (research) - BOTH PASSED
+purpose: v0.6 自测 - 测试 MiniMax-M3 的顿悟 + 长程能力
+layers:
+  layer_1: insights/dna-software-replication/core.md
+  layer_2: insights/dna-software-replication/faces.md
+  artifacts:
+    - type: doc
+      path: insights/dna-software-replication/artifacts/article.md
+core_quote: "DNA 双螺旋和软件架构中的'双视图 / 多副本'本质是同一种系统——冗余副本 + 镜像校验 + 冲突解决 + 半保留同步"
+links:
+  to_insight_framework: 80-meta/insight-to-work.md
+  faces_checklist: 80-meta/insight-4-faces-checklist.md
+  layers_protocol: 80-meta/insight-3-layer-info-protocol.md
+  persistence: 80-meta/insight-4-persistence-mechanisms.md
+  rubric: 80-meta/insight-completion-rubric.md
