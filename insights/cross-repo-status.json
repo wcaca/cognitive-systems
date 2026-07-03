@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-03T21:27:17Z",
+  "generated_at": "2026-07-03T21:32:51Z",
   "protocol_version": "v0.8.15",
   "repos": [
   {
     "name": "cognitive-systems",
     "type": "research (public)",
     "path": "/workspace/repos/cognitive-systems",
-    "sha": "d60027f",
-    "version": "v0.6.18",
+    "sha": "c387827",
+    "version": "v0.8.15",
     "date": "2026-07-03",
-    "summary": "auto(cross-repo): refresh status after sas-graph v0.6.18 pushed"
+    "summary": "feat(80-meta): v0.8.15 \u591a writer \u534f\u8c03 = \u987f\u609f R \u5347\u7ea7"
   },  {
     "name": "sas-graph",
     "type": "research (private)",
