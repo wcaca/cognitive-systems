@@ -364,3 +364,409 @@
 
 **这 5 个版本对应 4 阶段模型的 v0.X 是从"新开期"过渡到"成熟期"的过程**。
 cognitive-systems 仓作为研究对象本身也在经历这个阶段过渡——这是一个**自指**的研究结构。
+---
+
+## v0.5 · 2026-07-01 · LLM 顿悟能力评测（骨架）
+
+### 触发 (Trigger)
+v0.4 留下开放问题："决策什么时候校准什么" — 需要先把"LLM 能不能顿悟"这问题本身测出来。
+
+### 目的 (Purpose)
+把"LLM 顿悟能力"做成可评测对象：5 任务 + 4 维度 + 5 类开放问题，作为后续研究的基础设施。
+
+### 状态 (State)
+- 已有：v0.1-v0.4 的治理框架 + 决策流程
+- 缺：评测方法本身
+
+### 方法 (Methodology)
+不一次写完评测方式，先建骨架（5 任务 + 4 维度 + 5 类开放问题），后续 v0.5.1-v0.5.5 分阶段补 protocol / 数据集 / 评分 / contamination / 完整设计。
+
+### 已知未知 (Known-Unknowns)
+- 5 类开放问题是否覆盖 LLM 顿悟的所有面
+- 怎么防止 contamination（LLM 见过 benchmark 答案）
+- 评分者间一致性（IRR）怎么做
+
+### 决策流程回顾
+- **决策触发**：user 触发（v0.4 开放问题）
+- **决策标准**：评测 = 可重复 + 可验证
+- **决策信号**：prototype 评分 + 多人一致性
+- **决策复盘**：v0.5.1 防污染机制直接回应 v0.5 contamination 未知
+
+### 做了什么 (What was done)
+- `80-meta/llm-insight-benchmark.md`（5 任务 + 4 维度 + 5 类开放问题）
+- 1 commit (7bf77c8)
+
+---
+
+## v0.5.1 · 2026-07-01 · 评测协议 + 防污染
+
+### 触发 (Trigger)
+v0.5 留下的 contamination 风险。
+
+### 目的 (Purpose)
+把"评测方式"具体化：3 层组合 protocol + 5 级评分锚定 + 6 个防污染机制 + prototype。
+
+### 决策流程回顾
+- **决策触发**：v0.5 留下的开放问题
+- **决策标准**：诚实承认不可信 + 流程透明 + 定期更新
+- **决策信号**：prototype 跨 prompt 变体稳定性
+- **决策复盘**：诚实记录 3 个开放问题（锚定金标准 / 变体等价性 / probe 反制）
+
+### 做了什么 (What was done)
+- `80-meta/llm-insight-evaluation-protocol.md`（3 层 protocol + 5 级评分 + 6 个防污染 + prototype）
+- 1 commit (9cdaff1)
+
+---
+
+## v0.6 · 2026-07-01 · insight-to-work 桥接机制
+
+### 触发 (Trigger)
+v0.5 评测了"LLM 能不能顿悟"，但**顿悟怎么变成作品**？下一步必然是桥接。
+
+### 目的 (Purpose)
+建立"顿悟 → 作品"的 4 步桥接机制：顿悟 → 验证 → 4 面展开 → 制品。
+
+### 决策流程回顾
+- **决策触发**：v0.5.1 完成 → 自然过渡到 "顿悟应用"
+- **决策标准**：bridge ≠ capture，桥接要可重复可验证
+- **决策信号**：prototype 自评分 (8.7/10)
+- **决策复盘**：v0.6 框架暴露"持续 4 难题"，需 v0.6.1-v0.6.5 解决
+
+### 做了什么 (What was done)
+- `80-meta/insight-to-work.md`（4 步桥接 + 4 面展开 + 4 持续机制 + 3 层信息整合）
+- prototype (案例 1 演练)
+- 1 commit (46c39e9)
+
+---
+
+## v0.6.1-v0.6.5 · 2026-07-01 · 桥接机制的 5 个细节（5 commits）
+
+### 触发 (Trigger)
+v0.6 框架暴露"持续 4 难题"。
+
+### 做了什么 (按顺序)
+1. **v0.6.1** (a90534e): 4 面 checklist 详细设计
+2. **v0.6.2** (2a5f69f): 3 层信息整合协议细化
+3. **v0.6.3** (3079cb6): 4 个持续机制从口号到具体实现
+4. **v0.6.4** (b6c9b39): 完成度多维评分 rubric 完整设计（27 点）
+5. **v0.6.5** (388d33a): 端到端 prototype 实测 (案例 2) - 评分 8.7/10
+
+### 决策流程回顾
+- **决策标准**：每步必须解决 v0.6 暴露的 1 个具体难题
+- **决策信号**：rubric 27 点自评 + prototype 实测
+- **决策复盘**：v0.6.5 prototype 暴露"创作节奏"问题，留给 v0.6.x 后续
+
+---
+
+## v0.7 · 2026-07-01 · M3 长程能力自测 + 第二份 prototype
+
+### 触发 (Trigger)
+v0.6.5 prototype 验证 v0.6 框架可用，但只在 1 个案例。**M3 (MiniMax-M3) 在长程推进中能不能持续顿悟？**
+
+### 目的 (Purpose)
+1. 跑第二份 prototype (DNA ↔ Software replication) 验证 v0.6 框架可推广
+2. 自测 M3 在长程任务中的顿悟能力
+3. 加可视化报告页
+
+### 决策流程回顾
+- **决策触发**：v0.6.5 done → 自然进入"跨 LLM 验证"
+- **决策标准**：新案例必须跟 v0.6.5 不可同源
+- **决策信号**：prototype self-rating 8.9/10 + 5 次 PIVOT echo 一致
+- **决策复盘**：v0.7.1/v0.7.2 加 INDEX/compare 报告页 = "框架可呈现"
+
+### 做了什么 (What was done)
+- v0.7 (89a07cc): DNA ↔ Software prototype + 自评
+- v0.7.1 (c64dd97): insights/INDEX.html
+- v0.7.2 (3915681): insights/compare.html 真实材料对比页
+- 4 commits 总
+
+---
+
+## v0.8 IPL · 2026-07-01 · 顿悟驱动的项目生命周期
+
+### 触发 (Trigger)
+v0.7 prototype 暴露"实施时跳过阶段 2+3 (范围+规划)"的实证缺口。
+
+### 目的 (Purpose)
+把"顿悟嵌入每个阶段出口"作为质量门：9 阶段 + 9 顿悟检查点。
+
+### 决策流程回顾
+- **决策触发**：v0.7 暴露的"半跑 vs 全跑"质量差异
+- **决策标准**：每个阶段出口必须有 1 个顿悟检查
+- **决策信号**：sas-graph v0.6 半跑 vs 全跑的对照
+- **决策复盘**：v0.8 = "质量门"概念首次系统化
+
+### 做了什么 (What was done)
+- `80-meta/project-lifecycle-insight.md` (9 阶段 + 9 顿悟检查点)
+- 1 commit (d702f55)
+
+---
+
+## v0.8.1 · 2026-07-01 · 递进认知链
+
+### 触发 (Trigger)
+sas-graph v0.6.2-v0.6.7 6 个子版本暴露 6 个顿悟 (A-F)。
+
+### 目的 (Purpose)
+证明"6 个顿悟不是独立的，是 1 个递进认知链"——暴露顺序 = 抽象层从低到高。
+
+### 决策流程回顾
+- **决策触发**：跨项目推进的元观察
+- **决策标准**：6 步暴露顺序 vs 教科书结构
+- **决策信号**：schema → 时间 → 部署 → 跨进程 → 算法 → 工具链 = 抽象层爬升
+- **决策复盘**：反哺 v0.6 + v0.8 的改进
+
+### 做了什么
+- `80-meta/recursive-cognition-chain.md`
+- 1 commit (a5e03e3)
+
+---
+
+## v0.8.2 · 2026-07-01 · 全景感知清单
+
+### 触发 (Trigger)
+user "如果具备全局感知，就会有基于顿悟的全局方案，不需要人的过度参与"
+
+### 目的 (Purpose)
+建立 LLM 顿悟完整性的反推机制：6 维自检清单。
+
+### 决策流程回顾
+- **决策触发**：user 反问
+- **决策标准**：LLM 能不能自己看到盲点
+- **决策信号**：6 维自检 (Schema/时间/部署/跨进程/算法/工具链)
+- **决策复盘**：v0.6.2-v0.6.7 实测 LLM 完整性 ~33%
+
+### 做了什么
+- `80-meta/holistic-perception-checklist.md`
+- 1 commit (13f2ee3)
+
+---
+
+## v0.8.3 · 2026-07-01 · 全局性顿悟尝试
+
+### 触发 (Trigger)
+user "尝试进行全局性顿悟"
+
+### 目的 (Purpose)
+看出 N 个 PIVOT 是 1 个爬升链 = 9 层 meta-perception 架构。
+
+### 决策流程回顾
+- **决策触发**：user 直接要求
+- **决策标准**：能不能从 13 步推进看出 1 个 9 层架构
+- **决策信号**：7+2 层认知系统 = 1 个体系（不是 9 个独立项目）
+- **决策复盘**：重新回答 v0.8.2 user 反问 → LLM + user 协同 = 90%
+
+### 做了什么
+- `80-meta/global-insight.md`
+- 1 commit (70cbdb8)
+
+---
+
+## v0.8.4 · 2026-07-01 · 立体完整度
+
+### 触发 (Trigger)
+user "根据你的执行速度，我判断每步完整度只是平面化的，因为实际上信息需要多个层面进行推断判断验证"
+
+### 目的 (Purpose)
+完整度 ≠ 只有验证, 完整度 = 推断 + 判断 + 验证 3 层立体。
+
+### 决策流程回顾
+- **决策触发**：user 反馈直接挑战"完整度"概念
+- **决策标准**：3 层 (推断/判断/验证) 必须都有
+- **决策信号**：v0.6.8 自评 = 推断 0% / 判断 0% / 验证 100% = 综合 33%
+- **决策复盘**：user 的"平面化"批评让 v0.8.2 LLM 完整性 ~33% 找到微观对应
+
+### 做了什么
+- `80-meta/tri-dimensional-completeness.md`
+- 1 commit (911f2f7)
+
+---
+
+## v0.8.5 · 2026-07-01 · 可能性域感知系统
+
+### 触发 (Trigger)
+user "顿悟扩散到所有部分需要对整个可能性域有感知"
+
+### 目的 (Purpose)
+扫整个可能性空间：当前状态 × 所有可能暴露 × 所有可能设计 × 所有可能实现。
+
+### 决策流程回顾
+- **决策触发**：user 反馈
+- **决策标准**：4 机制 (Schema 枚举 + 3 杠杆排序 + PIVOT echo + 盲点记录)
+- **决策信号**：v0.6.8 实测 = 25 个可能性点, 当前触达 3 个 = 12% (不是 33%)
+- **决策复盘**：v0.8.2 LLM 完整性 33% → v0.8.5 实际 12%，差距是盲点
+
+### 做了什么
+- `80-meta/possibility-domain-awareness.md`
+- 1 commit (370e2c4)
+
+---
+
+## v0.8.6 · 2026-07-01 · 模块间显式依赖
+
+### 触发 (Trigger)
+v0.8.5 schema 枚举暴露"模块依赖隐式"。
+
+### 决策流程回顾
+- **决策标准**：依赖 = 数据流 + 接口契约 + 副作用
+- **决策信号**：v0.6.x 跨模块调用时 2 次类型不一致
+
+### 做了什么
+- `80-meta/explicit-dependencies.md`
+- 1 commit (9011d54)
+
+---
+
+## v0.8.7-v0.8.8 · 2026-07-01 · schema 元信息框架 + 格式
+
+### 触发 (Trigger)
+sas-graph v0.6.11 smartMerge 暴露"schema 字段没有元信息"。
+
+### 决策流程回顾
+- **决策触发**：跨项目推进
+- **决策标准**：元信息 = merge 策略 + rationale
+- **决策信号**：v0.6.11 merge 8 测试暴露"不知道哪个字段保留"
+
+### 做了什么
+- v0.8.7 (8b10fd3): schema 元信息框架
+- v0.8.8 (847d507): schema 元信息格式 (4 种 + 推荐路径)
+- 2 commits
+
+---
+
+## v0.8.9 · 2026-07-01 · 类型即元信息
+
+### 触发 (Trigger)
+sas-graph v0.6.13 FieldMeta<T> 结构化元信息。
+
+### 决策流程回顾
+- **决策标准**：TS 类型 = schema + 元信息
+- **决策信号**：FieldMeta<T> 类型化元信息
+
+### 做了什么
+- `80-meta/types-as-metadata.md`
+- 1 commit (086e24a)
+
+---
+
+## v0.8.10 · 2026-07-01 · 类型系统局限 + escape hatch
+
+### 触发 (Trigger)
+sas-graph v0.6.14 暴露 TS 模板字面量类型的局限。
+
+### 决策流程回顾
+- **决策标准**：TS 推不出的部分必须有 escape hatch
+- **决策信号**：v0.6.14 escape hatches 用 `@ts-expect-error`
+
+### 做了什么
+- `80-meta/type-system-limits.md`
+- 1 commit (906c18d)
+
+---
+
+## v0.8.11 · 2026-07-02 · escape 文档化
+
+### 触发 (Trigger)
+跨午夜推进：escape hatch 散落各处，需统一文档化。
+
+### 决策流程回顾
+- **决策标准**：每个 escape 必须有 (原因 + 替代方案 + 撤销路径)
+- **决策信号**：v0.6.15 escape 决策表暴露 "DecisionEntityMeta.type: 'error'" 文档不一致
+
+### 做了什么
+- `80-meta/escape-decision-table.md`
+- 1 commit (38b0be3)
+
+---
+
+## v0.8.12 · 2026-07-02 · auto-generated 文档模式
+
+### 触发 (Trigger)
+sas-graph v0.6.16 auto-generate escape 表暴露 v0.6.15 bug (两个 Meta 不一致)。
+
+### 决策流程回顾
+- **决策触发**：sas-graph 实战暴露文档手写必过时
+- **决策标准**：auto-generate = 能力, 文档头标记 "auto-generated"
+- **决策信号**：v0.6.16 跑 gen-meta-doc 立即发现 type 不一致
+- **决策复盘**：升级 3 模式 (auto-gen script + header + 版本号)
+
+### 做了什么
+- `80-meta/auto-generated-docs.md`
+- 1 commit (0094b10)
+
+---
+
+## v0.8.13 · 2026-07-02 · CI enforcement 模式
+
+### 触发 (Trigger)
+sas-graph v0.6.17：auto-generate 不强制跑，文档 outdated 不报错。
+
+### 决策流程回顾
+- **决策触发**：v0.8.12 能力有了，机制不够
+- **决策标准**：4 个 CI enforcement 模式 (workflow + script + hook + branch protection)
+- **决策信号**：v0.6.17 check-docs 5 步流程
+- **决策复盘**：反哺 v0.8.12 加 CI 段 + 53→56 点 rubric
+
+### 做了什么
+- `80-meta/ci-enforcement.md`
+- 1 commit (10977fb)
+
+---
+
+## v0.8.14 · 2026-07-03 · 跨仓元数据同步
+
+### 触发 (Trigger)
+本仓 evolution.md 严重落后 (停在 v0.4) + 4 个仓的元数据全不一致 + agent-memory 是 memory 不是 sync 协议。
+
+### 目的 (Purpose)
+建立跨仓同步协议：commit 是 SSOT，跨仓视图是 derived，auto-generate + CI enforcement 跨仓版。
+
+### 决策流程回顾
+- **决策触发**：本仓 v0.8.13 暴露 — 元方法论自己违反了元方法论
+- **决策标准**：commit message 是各仓 local SSOT; 跨仓视图从 commit 派生
+- **决策信号**：4 个仓状态散落 (cognitive v0.6/v0.4; sas v0.6.8; creation 落后)
+- **决策复盘**：本文 = 顿悟 P 的延伸 = 顿悟 Q；预测顿悟 R = 多 writer 协调
+
+### 做了什么
+- `80-meta/cross-repo-sync.md`（Q 顿悟文档）
+- `scripts/cross-repo-status.sh`（auto-gen 脚本）
+- `.github/workflows/cross-repo-status-check.yml`（CI check）
+- `insights/cross-repo-status.md` + `.json`（auto-gen 输出）
+- README 状态表 + 路线图同步更新到 v0.8.14
+- evolution.md 补 v0.5-v0.8.14 段（本文）
+- 1 commit (本文)
+
+---
+
+## 演进元规则（v0.8.14 更新）
+
+> **每个 v0.X 段必须包含 8 个维度的最小集**：触发、目的、状态、方法、前提、已知未知、历史、基调。
+> 
+> 心境笔记 / 未来伏笔 / 反方观点是可选，但**强烈建议**至少填心境（个人项目）。
+> 
+> **v0.4 起新增**：每个 v0.X 段必须包含"决策流程回顾"段。
+> 
+> **v0.8.14 新增**：evolution.md 必须按 commit 节奏同步补段（不能让段落后于代码）。
+>   - CI enforcement (v0.8.13) 是"代码层"同步
+>   - evolution.md 同步是"元方法论层"同步
+>   - 两者都要
+
+---
+
+## 自我观察（v0.8.14 元反思）
+
+v0.8.14 暴露的事实：
+- 本仓 evolution.md 在 v0.4 之后停了 **10 个 commit 没更新**
+- README 状态表停在 v0.6
+- **元方法论自己违反了元方法论**
+
+这是顿悟 P 的极致讽刺：CI enforcement 是 v0.8.13 加的，但 v0.8.13 之后的 evolution.md / README 同步**没有 CI enforcement**。
+
+v0.8.14 的修法：
+1. cross-repo-status.sh auto-generate 跨仓视图
+2. CI check freshness (< 24h)
+3. evolution.md 在每个 v0.X commit 同步补段
+4. README 状态表在每个 v0.X commit 同步更新
+
+**自指的研究结构 v2**：研究仓自身成为 v0.8.14 框架的第一个应用对象。
+

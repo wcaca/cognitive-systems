@@ -1,0 +1,94 @@
+# Cross-Repo Status Check · 跨仓元数据同步 CI
+#
+# 起源: v0.8.14 (Q 顿悟)
+# 功能: 每次 push 自动跑 cross-repo-status.sh, 检查 4 个仓状态表是否新鲜
+# 触发: push to main, 每 6 小时 cron, manual
+
+name: cross-repo-status-check
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  generate-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: clone sibling repos (shallow)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p /tmp/sibling-repos
+          for repo in sas-graph creation-loop agent-memory; do
+            git clone --depth=10 "https://x-access-token:${GH_TOKEN}@github.com/wcaca/$repo.git" "/tmp/sibling-repos/$repo" || echo "WARN: failed to clone $repo"
+          done
+
+      - name: generate cross-repo status
+        run: |
+          bash scripts/cross-repo-status.sh --repos=$GITHUB_WORKSPACE,/tmp/sibling-repos/sas-graph,/tmp/sibling-repos/creation-loop,/tmp/sibling-repos/agent-memory 2>&1 | tee /tmp/cross-repo-status.log
+
+      - name: check freshness (must be < 1 day old)
+        run: |
+          if [[ ! -f insights/cross-repo-status.md ]]; then
+            echo "FAIL: insights/cross-repo-status.md not generated"
+            exit 1
+          fi
+          age_seconds=$(( $(date +%s) - $(stat -c %Y insights/cross-repo-status.md) ))
+          if [[ $age_seconds -gt 86400 ]]; then
+            echo "FAIL: insights/cross-repo-status.md is $age_seconds seconds old (> 1 day)"
+            exit 1
+          fi
+          echo "OK: insights/cross-repo-status.md is $age_seconds seconds old"
+
+      - name: check 4 repos present
+        run: |
+          if ! grep -q "cognitive-systems" insights/cross-repo-status.md; then
+            echo "FAIL: cognitive-systems missing from status"
+            exit 1
+          fi
+          if ! grep -q "sas-graph" insights/cross-repo-status.md; then
+            echo "FAIL: sas-graph missing"
+            exit 1
+          fi
+          if ! grep -q "creation-loop" insights/cross-repo-status.md; then
+            echo "FAIL: creation-loop missing"
+            exit 1
+          fi
+          if ! grep -q "agent-memory" insights/cross-repo-status.md; then
+            echo "FAIL: agent-memory missing"
+            exit 1
+          fi
+          echo "OK: all 4 repos present"
+
+      - name: commit if changed
+        run: |
+          git config user.email "Mavis@Mavis.local"
+          git config user.name "Mavis"
+          git add insights/cross-repo-status.md insights/cross-repo-status.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "auto(cross-repo): refresh status from sibling repos"
+            git push
+          fi
+
+      - name: upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cross-repo-status
+          path: |
+            insights/cross-repo-status.md
+            insights/cross-repo-status.json
+            /tmp/cross-repo-status.log

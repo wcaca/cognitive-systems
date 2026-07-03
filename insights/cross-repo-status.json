@@ -1,0 +1,39 @@
+{
+  "generated_at": "2026-07-03T21:15:46Z",
+  "protocol_version": "v0.8.14",
+  "repos": [
+  {
+    "name": "cognitive-systems",
+    "type": "research (public)",
+    "path": "/workspace/repos/cognitive-systems",
+    "sha": "10977fb",
+    "version": "v0.8.13",
+    "date": "2026-07-02",
+    "summary": "feat(80-meta): v0.8.13 CI enforcement \u6a21\u5f0f = \u987f\u609f P \u5347\u7ea7"
+  },  {
+    "name": "sas-graph",
+    "type": "research (private)",
+    "path": "/workspace/repos/sas-graph",
+    "sha": "a41e0d4",
+    "version": "v0.6.17",
+    "date": "2026-07-02",
+    "summary": "feat+docs: v0.6.17 CI \u68c0\u67e5 auto-generated docs outdated + \u987f\u609f P"
+  },  {
+    "name": "creation-loop",
+    "type": "research (private)",
+    "path": "/workspace/repos/creation-loop",
+    "sha": "5dc92b8",
+    "version": "v1.0",
+    "date": "2026-07-02",
+    "summary": "docs(scheduler): final ack of v0.3 deployment-limitations section rewrite (no further code change)"
+  },  {
+    "name": "agent-memory",
+    "type": "memory (private)",
+    "path": "/workspace/repos/agent-memory",
+    "sha": "253dfd1",
+    "version": "-",
+    "date": "2026-07-01",
+    "summary": "history: 2026-07-01 05:00 \u51cc\u6668\u957f\u7a0b\u63a8\u8fdb (cognitive-systems v0.10-v0.12 N=3 baseline)"
+  }
+  ]
+}
