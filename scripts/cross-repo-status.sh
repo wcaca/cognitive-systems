@@ -1,22 +1,28 @@
 #!/usr/bin/env bash
-# cross-repo-status.sh · 跨仓元数据同步脚本 (v0.8.14)
+# cross-repo-status.sh · 跨仓元数据同步脚本 (v0.8.15)
 #
-# 功能: 从 4 个仓的 git log 自动抽取 latest commit / version / date / summary
+# 功能: 从 4 个仓的 git log 自动抽取 latest commit / version / date / next-pending
 # 输出:
 #   1. insights/cross-repo-status.md (人类可读)
 #   2. insights/cross-repo-status.json (机器可读)
 #
 # 用法:
-#   bash scripts/cross-repo-status.sh
-#   bash scripts/cross-repo-status.sh --repos=/path1,/path2,...
+#   bash scripts/cross-repo-status.sh                 # 跑跨仓视图生成
+#   bash scripts/cross-repo-status.sh --repos=PATH... # 指定仓路径
+#   bash scripts/cross-repo-status.sh --push          # 生成后自动 pull-push (v0.8.15 协议 2)
+#   bash scripts/cross-repo-status.sh --no-lock       # 跳过 lock 检查 (debug 用)
 #
 # 设计原则 (跨仓 sync 协议):
 #   - 各仓 commit message 是 local SSOT
 #   - 跨仓视图是 derived, 不手写
 #   - 自动生成, 跟 source 同步 (协议 2 + 协议 4)
+#   - 多 writer 协调: lock + pull-push + own view per仓 (v0.8.15 协议 1+2+4)
 
 set -euo pipefail
 
+# 解析参数
+NO_LOCK=false
+DO_PUSH=false
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 REPO_PARENT="$(cd "$REPO_ROOT/.." && pwd)"
@@ -29,15 +35,45 @@ DEFAULT_REPOS=(
 )
 
 REPOS=("${DEFAULT_REPOS[@]}")
-if [[ "${1:-}" == --repos=* ]]; then
-  IFS=',' read -ra REPOS <<< "${1#--repos=}"
-fi
+for arg in "$@"; do
+  case "$arg" in
+    --no-lock) NO_LOCK=true ;;
+    --push) DO_PUSH=true ;;
+    --repos=*) IFS=',' read -ra REPOS <<< "${arg#--repos=}" ;;
+    *) echo "Unknown arg: $arg" >&2; exit 1 ;;
+  esac
+done
 
 OUT_DIR="$REPO_ROOT/insights"
 OUT_MD="$OUT_DIR/cross-repo-status.md"
 OUT_JSON="$OUT_DIR/cross-repo-status.json"
 
 mkdir -p "$OUT_DIR"
+
+# v0.8.15 多 writer 协调: lock 文件
+LOCK_FILE="${CROSS_REPO_LOCK:-/tmp/cross-repo-status.lock}"
+LOCK_TIMEOUT="${LOCK_TIMEOUT:-600}"  # 10 分钟超时
+
+acquire_lock() {
+  if [[ "$NO_LOCK" == "true" ]]; then return 0; fi
+  if [[ -f "$LOCK_FILE" ]]; then
+    local lock_age
+    lock_age=$(( $(date +%s) - $(stat -c %Y "$LOCK_FILE") ))
+    if [[ $lock_age -gt $LOCK_TIMEOUT ]]; then
+      echo "WARN: stale lock (${lock_age}s old), removing" >&2
+      rm -f "$LOCK_FILE"
+    else
+      echo "SKIP: another writer holds lock (${lock_age}s old)" >&2
+      exit 0
+    fi
+  fi
+  echo "$$" > "$LOCK_FILE"
+  trap "rm -f $LOCK_FILE" EXIT
+}
+
+release_lock() {
+  rm -f "$LOCK_FILE" 2>/dev/null || true
+}
 
 # 元数据: 按 basename 查找
 declare -A DISPLAY_NAMES_BY_BASENAME=(
@@ -68,29 +104,22 @@ repo_type() {
 parse_version() {
   local msg="$1"
   local ver
-  # 1. 3 段版本号 (e.g. v0.8.13)
   ver=$(echo "$msg" | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)
-  # 2. 2 段版本号 (e.g. v0.6 / v1.0 / v0.12)
   if [[ -z "$ver" ]]; then
     local raw
     raw=$(echo "$msg" | grep -oE 'v[0-9]+\.[0-9]+' | head -1 || true)
     if [[ -n "$raw" ]]; then
-      # 过滤假版本: 后面紧跟 描述性英文 / 连字符 / 括号 / 中文
       local after
       after=$(echo "$msg" | sed "s/.*$raw//" | head -c 10)
-      # 真版本: 后面是终止 / 冒号 / 中文章符 / 大写英文
-      # 假版本: 后面是描述性文本
       if [[ "$after" =~ ^[[:space:]]+(deploy|url|limitations|section|test|stats|upgrade|notes|chapter|appendix|mode|status) ]]; then
         ver=""
       elif [[ "$after" =~ ^-(v[0-9]) ]]; then
-        # "v0.10-v0.12" 这种范围
         ver=""
       else
         ver="$raw"
       fi
     fi
   fi
-  # 3. V0_6_1 格式
   if [[ -z "$ver" ]]; then
     ver=$(echo "$msg" | grep -oE 'V[0-9]+_[0-9]+(_[0-9]+)?' | head -1 | tr '_' '.' || true)
   fi
@@ -102,7 +131,6 @@ parse_summary() {
   echo "$msg" | head -1
 }
 
-# 往回找带版本号的 commit (最多 10 个)
 find_latest_version() {
   while IFS= read -r -d $'\0' msg; do
     local v
@@ -115,10 +143,78 @@ find_latest_version() {
   echo "-"
 }
 
+# v0.8.15 协议 2: pull-push 模式
+pull_push() {
+  if [[ "$DO_PUSH" != "true" ]]; then return 0; fi
+  echo ""
+  echo "=== Pull-push mode (v0.8.15 protocol 2) ==="
+  cd "$REPO_ROOT"
+
+  # stash unstaged (避免 pull 冲突)
+  local stashed=false
+  if ! git diff --quiet 2>/dev/null; then
+    git stash push -u -m "cross-repo-status pre-pull stash $(date +%s)" >/dev/null 2>&1
+    stashed=true
+  fi
+
+  # pull --rebase
+  if ! git pull --rebase origin main 2>&1 | tail -3; then
+    echo "WARN: pull failed, skipping push"
+    [[ "$stashed" == "true" ]] && git stash pop >/dev/null 2>&1 || true
+    return 0
+  fi
+
+  # unstash
+  [[ "$stashed" == "true" ]] && git stash pop >/dev/null 2>&1 || true
+
+  # 检查内容是否有变化
+  if git diff --quiet "$OUT_MD" "$OUT_JSON" 2>/dev/null; then
+    echo "No changes to commit"
+    return 0
+  fi
+
+  # commit
+  git config user.email "Mavis@Mavis.local" 2>/dev/null || true
+  git config user.name "Mavis" 2>/dev/null || true
+  git add "$OUT_MD" "$OUT_JSON"
+
+  # 计算 content hash
+  local hash
+  hash=$(sha256sum "$OUT_MD" | head -c 8)
+  git commit -m "auto(cross-repo): refresh status ${hash}
+
+Generated at $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+Protocol: v0.8.15 multi-writer coordination
+
+Co-authored-by: Mavis <Mavis@Mavis.local>" >/dev/null
+
+  # push (race lost 时重试一次)
+  if ! git push 2>&1 | tail -3; then
+    echo "WARN: push failed (race?), retry after pull"
+    # retry pull: 也要 stash
+    local stashed2=false
+    if ! git diff --quiet 2>/dev/null; then
+      git stash push -u -m "cross-repo-status retry stash $(date +%s)" >/dev/null 2>&1
+      stashed2=true
+    fi
+    git pull --rebase origin main
+    [[ "$stashed2" == "true" ]] && git stash pop >/dev/null 2>&1 || true
+    git add "$OUT_MD" "$OUT_JSON"
+    git commit -m "auto(cross-repo): refresh status ${hash} (retry after race)" >/dev/null
+    git push
+  fi
+}
+
+# 主流程
+acquire_lock
+
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 JSON_ENTRIES=()
 
 echo "=== Generating cross-repo status at $TIMESTAMP ==="
+echo "Protocol: v0.8.15 multi-writer coordination"
+echo "Repos: ${#REPOS[@]}"
+echo ""
 
 {
   echo "# Cross-Repository Status (auto-generated)"
@@ -126,7 +222,7 @@ echo "=== Generating cross-repo status at $TIMESTAMP ==="
   echo "> **自动生成**: 运行 \`bash scripts/cross-repo-status.sh\` 重新生成"
   echo "> **不要手改**: 改各仓的 commit, 重跑脚本"
   echo "> **生成时间**: $TIMESTAMP"
-  echo "> **协议版本**: v0.8.14"
+  echo "> **协议版本**: v0.8.15"
   echo ""
   echo "## 4 个仓的最新状态"
   echo ""
@@ -170,7 +266,7 @@ done
 {
   echo "{"
   echo "  \"generated_at\": \"$TIMESTAMP\","
-  echo "  \"protocol_version\": \"v0.8.14\","
+  echo "  \"protocol_version\": \"v0.8.15\","
   echo "  \"repos\": ["
   printf '%s\n' "${JSON_ENTRIES[@]}"
   echo "  ]"
@@ -186,9 +282,13 @@ with open('$OUT_JSON', 'w') as f:
     f.write(content)
 "
 
-echo ""
 echo "=== Generated ==="
 echo "  MD:   $OUT_MD"
 echo "  JSON: $OUT_JSON"
 echo ""
 cat "$OUT_MD"
+
+# v0.8.15 协议 2: 可选 push
+pull_push
+
+release_lock
