@@ -1,0 +1,60 @@
+name: Skeleton-as-completeness check
+on:
+  push:
+    paths:
+      - '**.md'
+      - '.github/workflows/skeleton-check.yml'
+  pull_request:
+
+jobs:
+  check-skeleton:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check empty directories have README 占位
+        run: |
+          echo "=== Skeleton-as-completeness check (v0.8.16 协议) ==="
+          errors=0
+          warnings=0
+
+          # 已知可能为空的目录
+          for dir in 10-frameworks 30-protocols 40-experiments 50-metrics 70-artifacts; do
+            if [ ! -d "$dir" ]; then
+              # 目录不存在 — OK, 可能被删了
+              continue
+            fi
+
+            # 目录存在，看里面除了 .git/.gitkeep/ 之外有没有内容
+            content_count=$(find "$dir" -mindepth 1 -maxdepth 2 \
+              -not -path '*/\.git*' \
+              -not -name '.gitkeep' \
+              -not -name '.gitignore' \
+              | wc -l)
+
+            if [ "$content_count" = "0" ]; then
+              echo "WARN: $dir/ is empty (no content beyond .gitkeep)"
+              warnings=$((warnings + 1))
+
+              # 如果是空的但有 README 占位，OK
+              if [ -f "$dir/README.md" ]; then
+                if grep -q -i "empty\|占位\|计划中\|active" "$dir/README.md"; then
+                  echo "  OK: $dir/README.md 标注了 empty/active"
+                else
+                  echo "  WARN: $dir/README.md 没标 empty/active"
+                  warnings=$((warnings + 1))
+                fi
+              else
+                echo "  ERROR: $dir/ is empty AND has no README 占位"
+                errors=$((errors + 1))
+              fi
+            fi
+          done
+
+          echo ""
+          echo "=== Summary: $errors errors, $warnings warnings ==="
+
+          if [ "$errors" -gt 0 ]; then
+            echo "FAILED: 空目录必须有 README 占位"
+            exit 1
+          fi
