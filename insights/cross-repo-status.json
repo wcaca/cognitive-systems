@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-05T21:14:42Z",
+  "generated_at": "2026-07-05T21:24:57Z",
   "protocol_version": "v0.8.15",
   "repos": [
   {
     "name": "cognitive-systems",
     "type": "research (public)",
     "path": "/workspace/cognitive-systems",
-    "sha": "04d5ddf",
-    "version": "v0.8.16",
-    "date": "2026-07-04",
-    "summary": "chore: \u540c\u6b65 README \u72b6\u6001\u8868 + cross-repo-status (v0.8.16 \u540e\u81ea\u52a8 refresh)"
+    "sha": "27e1d75",
+    "version": "v0.8.17",
+    "date": "2026-07-05",
+    "summary": "feat(30-protocols): v0.8.17 \u586b\u5b9e\u987a\u5e8f\u534f\u8c03 = \u987f\u609f T"
   },  {
     "name": "sas-graph",
     "type": "research (private)",
@@ -30,10 +30,10 @@
     "name": "agent-memory",
     "type": "memory (private)",
     "path": "/workspace/agent-memory",
-    "sha": "e67db21",
-    "version": "-",
-    "date": "2026-07-06",
-    "summary": "update 2026-07-05.md"
+    "sha": "42b2675",
+    "version": "v0.8.17",
+    "date": "2026-07-05",
+    "summary": "history: 2026-07-05 \u51cc\u6668\u957f\u7a0b\u63a8\u8fdb (T \u987f\u609f v0.8.17 + \u5f52\u6863\u5b9e\u65bd)"
   }
   ]
 }
