@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-04T21:23:19Z",
+  "generated_at": "2026-07-05T21:14:42Z",
   "protocol_version": "v0.8.15",
   "repos": [
   {
     "name": "cognitive-systems",
     "type": "research (public)",
     "path": "/workspace/cognitive-systems",
-    "sha": "bfe6279",
+    "sha": "04d5ddf",
     "version": "v0.8.16",
     "date": "2026-07-04",
-    "summary": "fix(10-frameworks): S \u534f\u8bae enforcement \u66b4\u9732\u7684\u7a7a\u76ee\u5f55\u8fdd\u89c4"
+    "summary": "chore: \u540c\u6b65 README \u72b6\u6001\u8868 + cross-repo-status (v0.8.16 \u540e\u81ea\u52a8 refresh)"
   },  {
     "name": "sas-graph",
     "type": "research (private)",
@@ -19,13 +19,21 @@
     "date": "2026-07-03",
     "summary": "fix(scripts): parse_version \u6392\u9664 'after/before/from <\u4ed3\u540d> vX.Y' \u5f15\u7528"
   },  {
+    "name": "creation-loop",
+    "type": "research (private)",
+    "path": "/workspace/creation-loop",
+    "sha": "5dc92b8",
+    "version": "v1.0",
+    "date": "2026-07-02",
+    "summary": "docs(scheduler): final ack of v0.3 deployment-limitations section rewrite (no further code change)"
+  },  {
     "name": "agent-memory",
     "type": "memory (private)",
     "path": "/workspace/agent-memory",
-    "sha": "f94106a",
+    "sha": "e67db21",
     "version": "-",
-    "date": "2026-07-04",
-    "summary": "history: 2026-07-04 \u51cc\u6668\u957f\u7a0b\u63a8\u8fdb (\u5408\u5e76 bot \u5065\u5eb7\u68c0\u67e5 + S \u987f\u609f + beauty-crm \u771f bug)"
+    "date": "2026-07-06",
+    "summary": "update 2026-07-05.md"
   }
   ]
 }

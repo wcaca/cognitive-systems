@@ -11,6 +11,8 @@
 #   bash scripts/cross-repo-status.sh --repos=PATH... # 指定仓路径
 #   bash scripts/cross-repo-status.sh --push          # 生成后自动 pull-push (v0.8.15 协议 2)
 #   bash scripts/cross-repo-status.sh --no-lock       # 跳过 lock 检查 (debug 用)
+#   bash scripts/cross-repo-status.sh --archive       # v0.8.17 起 · 归档到 70-artifacts/cross-repo-status-archive
+#   bash scripts/cross-repo-status.sh --archive=version  # 强制写版本快照 (即使 commit msg 无 vX.Y.Z)
 #
 # 设计原则 (跨仓 sync 协议):
 #   - 各仓 commit message 是 local SSOT
@@ -35,10 +37,17 @@ DEFAULT_REPOS=(
 )
 
 REPOS=("${DEFAULT_REPOS[@]}")
+# v0.8.17 起: --archive 归档模式
+ARCHIVE_MODE="none"  # none | daily | version
+ARCHIVE_FORCE_VERSION=""
 for arg in "$@"; do
   case "$arg" in
     --no-lock) NO_LOCK=true ;;
     --push) DO_PUSH=true ;;
+    --archive) ARCHIVE_MODE="daily" ;;
+    --archive=daily) ARCHIVE_MODE="daily" ;;
+    --archive=version) ARCHIVE_MODE="version" ;;
+    --archive-version=*) ARCHIVE_MODE="version"; ARCHIVE_FORCE_VERSION="${arg#--archive-version=}" ;;
     --repos=*) IFS=',' read -ra REPOS <<< "${arg#--repos=}" ;;
     *) echo "Unknown arg: $arg" >&2; exit 1 ;;
   esac
@@ -73,6 +82,62 @@ acquire_lock() {
 
 release_lock() {
   rm -f "$LOCK_FILE" 2>/dev/null || true
+}
+
+# v0.8.17 起: 归档模式
+# --archive           → 每日快照 (YYYY-MM-DD-daily.md)
+# --archive=version   → 版本快照 (YYYY-MM-DD-vX.Y.Z.md), commit 无版本号则跳
+# --archive-version=X.Y.Z → 强制指定版本号 (跳过 auto-detect)
+run_archive() {
+  if [[ "$ARCHIVE_MODE" == "none" ]]; then return 0; fi
+
+  cd "$REPO_ROOT"
+  ARCHIVE_DIR="70-artifacts/cross-repo-status-archive"
+  mkdir -p "$ARCHIVE_DIR"
+  TODAY=$(date -u +"%Y-%m-%d")
+  COGNITIVE_HEAD_SHA=$(git -C "$REPO_ROOT" rev-parse --short HEAD 2>/dev/null || echo "unknown")
+  COGNITIVE_HEAD_MSG=$(git -C "$REPO_ROOT" log -1 --format=%s 2>/dev/null || echo "")
+
+  DAILY_FILE="$ARCHIVE_DIR/${TODAY}-daily.md"
+
+  if [[ "$ARCHIVE_MODE" == "daily" ]]; then
+    # 每日快照: copy insights/cross-repo-status.md → daily.md
+    if [[ ! -f "insights/cross-repo-status.md" ]]; then
+      echo "WARN: insights/cross-repo-status.md 不存在, 跳过" >&2
+      return 1
+    fi
+    cp "insights/cross-repo-status.md" "$DAILY_FILE"
+    echo ""
+    echo "=== Archived (daily) → $DAILY_FILE ==="
+  fi
+
+  if [[ "$ARCHIVE_MODE" == "version" ]]; then
+    # 版本快照: 先写 daily, 再写 version-named
+    if [[ ! -f "insights/cross-repo-status.md" ]]; then
+      echo "WARN: insights/cross-repo-status.md 不存在, 跳过" >&2
+      return 1
+    fi
+    cp "insights/cross-repo-status.md" "$DAILY_FILE"
+    VERSION_FILE=""
+    if [[ -n "$ARCHIVE_FORCE_VERSION" ]]; then
+      VERSION_FILE="$ARCHIVE_DIR/${TODAY}-${ARCHIVE_FORCE_VERSION}.md"
+    else
+      # 从最新 commit msg 提取 vX.Y.Z
+      V=$(echo "$COGNITIVE_HEAD_MSG" | grep -oE "v[0-9]+\.[0-9]+(\.[0-9]+)?" | head -1)
+      if [[ -n "$V" ]]; then
+        VERSION_FILE="$ARCHIVE_DIR/${TODAY}-${V}.md"
+      fi
+    fi
+    if [[ -n "$VERSION_FILE" ]]; then
+      cp "insights/cross-repo-status.md" "$VERSION_FILE"
+      echo ""
+      echo "=== Archived (version) → $VERSION_FILE ==="
+      echo "=== Archived (daily)   → $DAILY_FILE ==="
+    else
+      echo ""
+      echo "=== Archived (daily) only → $DAILY_FILE === (no vX.Y.Z in commit msg, use --archive-version=X.Y.Z to force)"
+    fi
+  fi
 }
 
 # 元数据: 按 basename 查找
@@ -290,5 +355,8 @@ cat "$OUT_MD"
 
 # v0.8.15 协议 2: 可选 push
 pull_push
+
+# v0.8.17 协议: 归档模式 (per 70-artifacts/cross-repo-status-archive-policy.md)
+run_archive
 
 release_lock
