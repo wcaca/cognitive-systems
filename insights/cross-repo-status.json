@@ -1,21 +1,37 @@
 {
-  "generated_at": "2026-07-05T21:32:30Z",
+  "generated_at": "2026-07-06T21:35:33Z",
   "protocol_version": "v0.8.15",
   "repos": [
   {
+    "name": "beauty-crm",
+    "type": "product (private)",
+    "path": "/workspace/beauty-crm",
+    "sha": "2702ae1",
+    "version": "-",
+    "date": "2026-07-06",
+    "summary": "docs(beauty-crm): CHANGELOG \u8865 v26b \u6bb5 + \u52a0 v26c (2026-07-06)"
+  },  {
+    "name": "system-self",
+    "type": "product (private)",
+    "path": "/workspace/system-self",
+    "sha": "580c609",
+    "version": "-",
+    "date": "2026-07-06",
+    "summary": "feat(system-self): \u955c\u5b50\u539f\u5219\u6279\u91cf\u6269\u5c55\u5230 4 \u4e2a AI endpoint (Step 2 / C9.2)"
+  },  {
     "name": "cognitive-systems",
     "type": "research (public)",
     "path": "/workspace/cognitive-systems",
-    "sha": "c1219f2",
+    "sha": "3181ef0",
     "version": "v0.8.17",
     "date": "2026-07-05",
-    "summary": "auto(cross-repo): refresh status 6c489376"
+    "summary": "auto(cross-repo): refresh after agent-memory v0.8.17 push"
   },  {
     "name": "sas-graph",
     "type": "research (private)",
     "path": "/workspace/sas-graph",
     "sha": "06019cf",
-    "version": "v0.6.19",
+    "version": "-",
     "date": "2026-07-03",
     "summary": "fix(scripts): parse_version \u6392\u9664 'after/before/from <\u4ed3\u540d> vX.Y' \u5f15\u7528"
   },  {
@@ -23,7 +39,7 @@
     "type": "research (private)",
     "path": "/workspace/creation-loop",
     "sha": "5dc92b8",
-    "version": "v1.0",
+    "version": "-",
     "date": "2026-07-02",
     "summary": "docs(scheduler): final ack of v0.3 deployment-limitations section rewrite (no further code change)"
   },  {

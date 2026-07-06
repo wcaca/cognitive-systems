@@ -152,6 +152,8 @@ declare -A REPO_TYPES_BY_BASENAME=(
   ["sas-graph"]="research (private)"
   ["creation-loop"]="research (private)"
   ["agent-memory"]="memory (private)"
+  ["beauty-crm"]="product (private)"
+  ["system-self"]="product (private)"
 )
 
 display_name() {
