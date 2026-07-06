@@ -33,6 +33,7 @@
 - **v0.8.12 auto-generated 文档模式**：顿悟 O 升级
 - **v0.8.13 CI enforcement 模式**：顿悟 P 升级
 - **v0.8.14 跨仓元数据同步**（Q 顿悟）：4 个仓的版本号 / commit 自动同步
+- **v0.8.18 跨仓范围扩展**（U 顿悟起步）：从 4 个 research 仓扩到 6 个仓（含 beauty-crm / system-self 两个 product 仓），让 product 仓也能享受跨仓 auto-status
 - **v0.8.15 多 writer 协调**（R 顿悟）：lock + pull-push + owner 模式解决 race condition
 - **v0.8.16 空目录 = 诚实信号**（S 顿悟）：填实 4 个空目录 (30-protocols / 40-experiments / 50-metrics / 70-artifacts) + 3 协议（README 占位 / 仓根标记 / 填实升级索引）
 - **v0.8.17 填实顺序协调**（T 顿悟）：3 子问题 (WHEN/WHO/HOW) + 6 步协调流程 + 验收 3 步 (一致性/完整性/归档)。补充 T 协议 (30-protocols/fill-order-coordination.md) + 实施 cross-repo-status --archive (70-artifacts/cross-repo-status-archive/) + 90-conventions 填实 README
@@ -42,7 +43,7 @@
 
 ### 跨仓状态
 
-[`insights/cross-repo-status.md`](./insights/cross-repo-status.md) (auto-generated) — 4 个仓 (cognitive-systems / sas-graph / creation-loop / agent-memory) 的最新版本 + commit。
+[`insights/cross-repo-status.md`](./insights/cross-repo-status.md) (auto-generated) — 6 个仓 (cognitive-systems / sas-graph / creation-loop / agent-memory / beauty-crm / system-self) 的最新版本 + commit。
 
 ## 仓库结构
 

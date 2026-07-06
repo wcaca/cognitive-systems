@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T21:35:33Z",
+  "generated_at": "2026-07-06T21:41:17Z",
   "protocol_version": "v0.8.15",
   "repos": [
   {
@@ -22,10 +22,10 @@
     "name": "cognitive-systems",
     "type": "research (public)",
     "path": "/workspace/cognitive-systems",
-    "sha": "3181ef0",
-    "version": "v0.8.17",
-    "date": "2026-07-05",
-    "summary": "auto(cross-repo): refresh after agent-memory v0.8.17 push"
+    "sha": "7dfb20c",
+    "version": "v0.8.18",
+    "date": "2026-07-06",
+    "summary": "feat(cognitive-systems): cross-repo \u8303\u56f4\u6269\u5c55\u5230 6 \u4ed3 (U \u987f\u609f\u8d77\u6b65, v0.8.18)"
   },  {
     "name": "sas-graph",
     "type": "research (private)",
@@ -46,10 +46,10 @@
     "name": "agent-memory",
     "type": "memory (private)",
     "path": "/workspace/agent-memory",
-    "sha": "88c3263",
-    "version": "v0.8.17",
-    "date": "2026-07-05",
-    "summary": "state(decisions): 2026-07-05 \u51cc\u6668\u957f\u7a0b\u63a8\u8fdb T \u987f\u609f v0.8.17 \u51b3\u7b56\u8bb0\u5f55"
+    "sha": "a90e5c5",
+    "version": "v0.8.18",
+    "date": "2026-07-06",
+    "summary": "history: 2026-07-06 \u51cc\u6668\u957f\u7a0b\u63a8\u8fdb (beauty-crm v26c + system-self C9.2 + cognitive-systems v0.8.18)"
   }
   ]
 }
