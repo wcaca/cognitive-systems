@@ -7,7 +7,7 @@
 一个用来沉淀「怎么构建可恢复、可适应、严密的认知系统」研究的公开知识库。
 不是论文集、不是教程，是**还在演进中的思考与设计**——框架、协议、实验、踩过的坑、对未来的猜测，都在这里。
 
-## 当前状态：v0.8.17
+## 当前状态：v0.8.18
 
 - **首个落地方向**：agent harness 体系
 - **首个具体系统**：[`20-systems/agent-harness/`](./20-systems/agent-harness/) —— 关于"运行 agent 的系统"该怎么设计的研究
@@ -36,8 +36,9 @@
 - **v0.8.15 多 writer 协调**（R 顿悟）：lock + pull-push + owner 模式解决 race condition
 - **v0.8.16 空目录 = 诚实信号**（S 顿悟）：填实 4 个空目录 (30-protocols / 40-experiments / 50-metrics / 70-artifacts) + 3 协议（README 占位 / 仓根标记 / 填实升级索引）
 - **v0.8.17 填实顺序协调**（T 顿悟）：3 子问题 (WHEN/WHO/HOW) + 6 步协调流程 + 验收 3 步 (一致性/完整性/归档)。补充 T 协议 (30-protocols/fill-order-coordination.md) + 实施 cross-repo-status --archive (70-artifacts/cross-repo-status-archive/) + 90-conventions 填实 README
-- **总文件数**：约 73 个（v0.8.17 +3）
-- **总 commit 数**：约 42+（v0.8.17 +2）
+- **v0.8.18 抽象层抽取**（U 顿悟）：T 协议实施第一步 — 抽 20-systems/agent-harness 重复模式到 10-frameworks/role-dimension-matrix.md (3 角色 × 10 维度 = 30 单元矩阵)。填实 10-frameworks 目录第一步 ([empty] → [active v0.8.18])
+- **总文件数**：约 74 个（v0.8.18 +1）
+- **总 commit 数**：约 43+（v0.8.18 +1）
 - **公开性**：public，欢迎讨论与共建
 
 ### 跨仓状态
@@ -48,7 +49,7 @@
 
 ```
 00-essence/         本体论 / 底层假设 / 我们在研究什么
-10-frameworks/      通用框架 [empty: v0.8.18 计划]
+10-frameworks/      通用框架 [active v0.8.18] — role-dimension-matrix.md
 20-systems/         具体系统设计
   ├── agent-harness/   v0.1：agent 运行系统的体系研究
   ├── llm-frontier/    v0.2（计划）：大模型前沿
@@ -92,6 +93,7 @@
 | **v0.8.15** | 2026-07-03 | 多 writer 协调（顿悟 R — lock + pull-push + owner） |
 | **v0.8.16** | 2026-07-04 | 空目录 = 诚实信号（顿悟 S — 本文） |
 | **v0.8.17** | 2026-07-05 | 填实顺序协调（顿悟 T）：3 子问题 (WHEN/WHO/HOW) + 6 步流程 + cross-repo-status --archive 实施 + 90-conventions README |
+| **v0.8.18** | 2026-07-07 | 抽象层抽取（顿悟 U）：T 协议实施第一步 — role-dimension-matrix.md (3 角色 × 10 维度 = 30 单元) |
 | **v0.9** | 计划 | 多 writer 协调协议（顿悟 R 预测） |
 | **v0.10+** | 待定 | LLM/意识/跨方向交叉 |
 
