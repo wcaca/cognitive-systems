@@ -38,8 +38,9 @@
 - **v0.8.17 填实顺序协调**（T 顿悟）：3 子问题 (WHEN/WHO/HOW) + 6 步协调流程 + 验收 3 步 (一致性/完整性/归档)。补充 T 协议 (30-protocols/fill-order-coordination.md) + 实施 cross-repo-status --archive (70-artifacts/cross-repo-status-archive/) + 90-conventions 填实 README
 - **v0.8.18 抽象层抽取**（U 顿悟）：T 协议实施第一步 — 抽 20-systems/agent-harness 重复模式到 10-frameworks/role-dimension-matrix.md (3 角色 × 10 维度 = 30 单元矩阵)。填实 10-frameworks 目录第一步 ([empty] → [active v0.8.18])
 - **v0.8.19 工具契约化**（V 顿悟）：填实 60-tools/ 目录 ([empty] → [active v0.8.19]) — 收录 cross-repo-status.md 契约 (路径不动, scripts/ 仍在, 60-tools/ 只放契约)
-- **总文件数**：约 76 个（v0.8.19 +2）
-- **总 commit 数**：约 44+（v0.8.19 +1）
+- **v0.8.20 指标可机读化**（W 顿悟）：50-metrics/completeness-metrics.md 从 [draft] 升级为 [active]，补可机读实现 `scripts/completeness-check.sh`（M1-M4 4 指标 + 综合分 0-100 + JSON 输出）。填实 60-tools/ 第二篇契约 `completeness-check.md`。**核心：指标不被自动化 = 指标不存在**
+- **总文件数**：约 80 个（v0.8.20 +4）
+- **总 commit 数**：约 46+（v0.8.20 +2）
 - **公开性**：public，欢迎讨论与共建
 
 ### 跨仓状态
@@ -51,14 +52,14 @@
 ```
 00-essence/         本体论 / 底层假设 / 我们在研究什么
 10-frameworks/      通用框架 [active v0.8.18] — role-dimension-matrix.md
-20-systems/         具体系统设计
+20-systems/         具体系统 [active v0.8.20] — agent-harness/consciousness/llm-frontier
   ├── agent-harness/   v0.1：agent 运行系统的体系研究
   ├── llm-frontier/    v0.2（计划）：大模型前沿
   └── consciousness/   v0.3（计划）：意识/认知架构
 30-protocols/       协议 [active v0.8.16] — insight-extraction-protocol
 40-experiments/     实验 [active v0.8.16] — Q+R 实证记录
-50-metrics/         指标 [active v0.8.16] — completeness-metrics (M1-M4)
-60-tools/           工具 [active v0.8.19] — cross-repo-status.md 契约
+50-metrics/         指标 [active v0.8.20] — completeness-metrics (M1-M4) + 可机读
+60-tools/           工具 [active v0.8.20] — cross-repo-status.md + completeness-check.md 契约
 70-artifacts/       制品 [active v0.8.17] — cross-repo-status-archive 已实施
 80-meta/            元思考：我们怎么研究、为什么这么分
 90-conventions/     约定 [active v0.8.17] — context-snapshot-template + contributing

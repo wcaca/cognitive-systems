@@ -1,6 +1,8 @@
 # Completeness Metrics · 仓完整性指标体系
 
-> [draft] 2026-07-04 · v0.8.16 · S 顿悟的实施产物
+> [active] 2026-07-08 · v0.8.20 · W 顿悟的实施产物（从 [draft] 升级为 [active]，附可机读脚本）
+>
+> **W 顿悟**：指标不是写了算的，是跑出来的。M1-M4 从 [draft] 文字描述升级为 [active] 可机读实现 = `scripts/completeness-check.sh`。指标被 CI/手动/跨仓检查调用之前，只是观念。
 >
 > 配套：[`80-meta/skeleton-as-completeness-signal.md`](../80-meta/skeleton-as-completeness-signal.md) §五
 >
@@ -92,3 +94,43 @@ def completeness_score(m1, m2, m3, m4):
 ## 6. 演进
 
 - v0.8.16 (2026-07-04)：初稿。4 个核心指标 + 综合分算法 + 实测数据
+## 7. v0.8.20 实测 (W 顿悟落地后)
+
+```
+$ bash scripts/completeness-check.sh
+=== completeness-check.sh · 2026-07-08T21:14:42Z ===
+M1 协议使用率     0.97   28/29 协议被引用
+M2 空目录诚实率  1.00   0/0 空目录有 README     (W 顿悟修正: 补 20-systems/.github 顶层 README)
+M3 evolution 同步率 0.07  2/30 commit 涉及 evolution  ⚠ 最大改进点
+M4 跨仓状态新鲜度 1.00   age=698s
+综合分 76.0    healthy
+```
+
+**W 顿悟的核心发现**：
+- 写完 completeness-metrics.md 之后没人跑过 = 指标是死的
+- v0.8.16 的"实测"是手动写的数（87.5），不是脚本算的数
+- v0.8.20 起每次 push 必跑 completeness-check.sh，**M3 evolution 同步率 7% 暴露了元方法论自己违反元方法论**
+
+## 8. 跟 CI 的集成 (v0.8.20)
+
+`.github/workflows/` 建议加 `completeness-check.yml`：
+
+```yaml
+name: completeness-check
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash scripts/completeness-check.sh
+```
+
+CI 失败 (score < threshold) 阻断 merge。
+
+## 9. 跟跨仓的关系
+
+`scripts/cross-repo-status.sh --completeness` 可批量跑多个仓的 completeness-check.sh，
+把每个仓的 score 写进 `cross-repo-status.md` 的"健康度"列。
+（W 协议留待 v0.8.21 实施）
+
