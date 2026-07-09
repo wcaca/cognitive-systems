@@ -887,3 +887,61 @@ v0.8.16 填实了 4 个空目录，但没协议化"什么时候填 + 谁来填 +
 - **V 顿悟 (v0.8.19)**：填实评估 —— 怎么区分"填实 + 用了"和"填实 + 没用"
 - **W 顿悟 (v0.8.20+)**：跨仓填实的优先级协调（4 仓各填实时谁排第一）
 
+
+---
+
+## v0.8.21 · 2026-07-09 (X 顿悟：指标测错对象)
+
+### 触发
+W 顿悟实施后，completeness-check.sh 实测暴露 M3 evolution 同步率 0.07 (2/30)。当时判断是"元方法论自己违反元方法论"，但隔夜再看发现：**指标测错了对象**。commit msg grep "evolution/insight/同步" 是测"作者嘴上说"，不是测"协议履行"。
+
+### 目的
+修正 M3 算法，引入 X 协议强制 evolution 同步，并思考"指标的'测什么'"这个被忽略的元问题。
+
+### 当时的状态
+- 已有：W 协议（completeness-check.sh = 4 指标可机读化）
+- 已有：M3 算法 (commit msg grep) = 测嘴上说
+- 缺：测"协议履行"的算法 + 强制补 evolution 的协议
+
+### 方法
+两步：
+1. **改算法**：M3 从 `grep -ciE "(evolution|元方法|insight|同步)"` 改为 `git log --diff-filter=AM -- evolution.md | wc -l`。从测文本改为测文件实际变化。
+2. **写协议**：30-protocols/evolution-sync-protocol.md，规定 WHEN (哪些 commit 必须补) / WHO (commit 作者) / HOW (8 维度 / 5 维度模板) / 验证 (CI + 手工 + 跨仓)。
+
+### 前提
+- 假设 evolution.md 是仓的"元方法论 SSOT"——单文件单版本
+- 假设 commit 作者能够区分"该不该补"（feat / fix / chore）
+- 假设 50% 的目标（每 2 commit 至少 1 个补）是合理负担
+
+### 已知未知
+- 不知道 content-length 阈值（≥100 字符）能否检测"集中补作弊"——Y 顿悟 v0.8.22 验证
+- 不知道 CI enforcement 是否会"误伤"小 fix（可能 fix 也要补 → 噪声）
+- 不知道 4 仓 (cognitive-systems / sas-graph / creation-loop / agent-memory) 各自 evolution 文件路径是否一致
+
+### 历史
+- v0.8.18: 抽象层抽取 (U)
+- v0.8.19: 工具契约化 (V)
+- v0.8.20: 指标可机读化 (W)
+- **v0.8.21: 指标测错对象修正 (X) — 本文**
+
+### 基调
+"发现指标作弊"是元方法论的第三步（第一步 S = 协议本身有空缺；第二步 W = 指标写完没跑；第三步 X = 指标跑的方法不对）。每一步都是"诚实升级"。
+
+### 做了什么
+1. `scripts/completeness-check.sh` M3 算法修正 (commit msg grep → diff-filter=AM)
+2. `30-protocols/evolution-sync-protocol.md` (3.5KB, X 协议主文档)
+3. `50-metrics/completeness-metrics.md` §M3 描述更新 + §6.1 算法对比 + §10 v0.8.21 实测
+4. `30-protocols/README.md` 添加 X 协议索引
+5. evolution.md 补 v0.8.21 段 (本文)
+6. README 状态表 + 路线图 + 目录树状态更新
+
+### 决策流程回顾
+- **决策触发**：M3=0.07 异常信号 + 隔夜回看
+- **决策标准**：先问"指标在测什么"再问"履行得怎么样"
+- **决策信号**：v0.8.20 W 协议暴露的 0.07 是"作弊"信号而不是"违反"信号
+- **决策复盘**：30-protocols/evolution-sync-protocol.md = X 协议主文档
+
+### 未来伏笔
+- **Y 顿悟 (v0.8.22)**：content-length 阈值检测"集中补作弊"——evolution.md 的每次修改至少 ≥ 100 字符
+- **Z 顿悟 (v0.8.23+)**：CI enforcement 强制 `feat:` commit 没补 evolution.md = 阻断 push
+- **AA 顿悟 (v0.8.24+)**：跨仓 enforcement——所有 4 仓的 M3 必须 ≥ 50% 才算 4 仓体系健康

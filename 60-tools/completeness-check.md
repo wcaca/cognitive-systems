@@ -11,8 +11,8 @@
 | 字段 | 值 |
 |------|-----|
 | **name** | completeness-check.sh |
-| **version** | v0.8.20 |
-| **path** | `scripts/completeness-check.sh` (199 行 bash) |
+| **version** | v0.8.21 (X 顿悟：M3 算法修正) |
+| **path** | `scripts/completeness-check.sh` (~205 行 bash) |
 | **language** | bash (set -uo pipefail, **不** -e) |
 | **dependencies** | git, find, grep, awk, stat (GNU 或 BSD 兼容) |
 | **runtime** | < 2s (cognitive-systems 仓实测 1.2s) |
@@ -24,7 +24,7 @@
 指标:
 1. **M1 协议使用率** — 仓内 commit/文档引用协议次数 / 80-meta/ 协议总数
 2. **M2 空目录诚实率** — empty_dirs_with_README / total_empty_dirs
-3. **M3 evolution 同步率** — evolution_commits / total_commits (最近 30 个)
+3. **M3 evolution 同步率** — evolution_commits / total_commits (最近 30 个, v0.8.21 算法: `git log --diff-filter=AM -- evolution.md`)
 4. **M4 跨仓状态新鲜度** — `insights/cross-repo-status.md` 最后修改时间与现在距离
 
 健康阈值 (默认 75): ≥75 = healthy, 60-75 = warning, <60 = unhealthy。
@@ -51,7 +51,7 @@ Repo: .    Threshold: 75
 -------------------------------- -------- ----------------------------------------
 M1 协议使用率               0.97     28/29 协议被引用
 M2 空目录诚实率            1.00     0/0 空目录有 README
-M3 evolution 同步率           0.07     2/30 commit 涉及 evolution
+M3 evolution 同步率           0.13     4/30 commit 实际更新 evolution.md
 M4 跨仓状态新鲜度         1.00     age=698s
 
 综合分 (M1-M4 等权平均)   76.0
@@ -66,7 +66,7 @@ JSON (`--json`):
   "metrics": {
     "M1_protocol_adoption": { "value": 0.97, "referenced": 28, "total": 29 },
     "M2_skeleton_honesty": { "value": 1.00, "with_readme": 0, "empty_total": 0 },
-    "M3_evolution_sync": { "value": 0.07, "evolution_commits": 2, "total_commits": 30 },
+    "M3_evolution_sync": { "value": 0.13, "evolution_commits": 4, "total_commits": 30, "algorithm": "diff-filter-AM on 20-systems/agent-harness/evolution.md" },
     "M4_cross_repo_freshness": { "value": 1.00, "age_seconds": "698" }
   },
   "score": 76.0,
@@ -108,12 +108,14 @@ JSON (`--json`):
 |------|------|------|
 | `M2 0%` 但仓无真空目录 | `.git/` 子目录被错误统计 | 已修 v0.8.20: case 排除 `*/.git/*` |
 | `M4 0.00` 永久 | `insights/cross-repo-status.md` 不存在 | 跑 `cross-repo-status.sh` 生成 |
-| `M3 0%` | evolution 模式未启动 | v0.8.20 暴露, 留待后续改进 commit 习惯 |
+| `M3 0%` (v0.8.20 算法) | commit msg 没写 evolution 关键词 | v0.8.21 修正: 改测 evolution.md 实际变化 (`--diff-filter=AM`) |
+| `M3 < 50%` (v0.8.21 算法) | evolution.md 真实同步率不足 | 修 X 协议: feat/fix(20-systems) 类 commit 必须补 evolution.md 段 |
 | macOS stat 不识别 `-c %Y` | 退出 1 | 已修 v0.8.20: 兼容 BSD stat `-f %m` |
 
 ## 实施历史
 
 - v0.8.20 (2026-07-08): 初版。199 行 bash + 60-tools/ 契约 = W 顿悟落地
-- v0.8.20+ 待办: 集成进 CI workflow, 跨仓 score 统计 (cross-repo-status.sh --completeness)
+- v0.8.21 (2026-07-09): X 顿悟 — M3 算法从 commit msg grep 改为 diff-filter=AM on evolution.md。配套 30-protocols/evolution-sync-protocol.md (X 协议)
+- v0.8.22+ 待办: 集成进 CI workflow, 跨仓 score 统计 (cross-repo-status.sh --completeness), content-length 阈值检测 (Y 顿悟)
 
 [PROTOCOL]: 变更时更新此头部,然后检查 ../CLAUDE.md

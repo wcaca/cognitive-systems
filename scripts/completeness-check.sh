@@ -137,11 +137,15 @@ done < <(find . -maxdepth 2 -type d 2>/dev/null | grep -v "^\.$")
 m2=$(awk -v with="$empty_with_readme" -v total="$empty_total" \
   'BEGIN { if (total > 0) printf "%.2f", with/total; else print "1.00" }')
 
-# ===== M3 evolution 同步率 =====
-# 最近 N 个 commit 中, 多少提到了 evolution / 元方法论 / insight 同步
+# ===== M3 evolution 同步率 (v0.8.21 X 顿悟修正) =====
+# v0.8.20 算法: 测 commit msg 文本里是否提 evolution/insight/同步 — 容易被污染, 不可靠
+# v0.8.21 算法: 测 evolution.md 在该 commit 是否被实际更新 (--diff-filter=AM)
+#   - 更准确: 测的是"协议有没有被履行", 而不是"作者有没有写关键词"
+#   - 配套协议: 30-protocols/evolution-sync-protocol.md
+# 默认 evolution.md 路径; 可通过 EVOLUTION_FILE 环境变量覆盖
+EVOLUTION_FILE="${EVOLUTION_FILE:-20-systems/agent-harness/evolution.md}"
 total_commits=$(git log --oneline -"$DEFAULT_N_COMMITS" 2>/dev/null | wc -l)
-evolution_commits=$(git log --oneline -"$DEFAULT_N_COMMITS" 2>/dev/null | \
-  grep -ciE "(evolution|元方法|insight|同步)" || echo "0")
+evolution_commits=$(git log --oneline -"$DEFAULT_N_COMMITS" --diff-filter=AM -- "$EVOLUTION_FILE" 2>/dev/null | wc -l)
 
 m3=$(awk -v evo="$evolution_commits" -v total="$total_commits" \
   'BEGIN { if (total > 0) printf "%.2f", evo/total; else print "0.00" }')
@@ -189,7 +193,7 @@ if [[ "$JSON_MODE" == "true" ]]; then
   "metrics": {
     "M1_protocol_adoption": { "value": $m1, "referenced": $protocol_referenced, "total": $protocol_total },
     "M2_skeleton_honesty": { "value": $m2, "with_readme": $empty_with_readme, "empty_total": $empty_total },
-    "M3_evolution_sync": { "value": $m3, "evolution_commits": $evolution_commits, "total_commits": $total_commits },
+    "M3_evolution_sync": { "value": $m3, "evolution_commits": $evolution_commits, "total_commits": $total_commits, "algorithm": "diff-filter-AM on $EVOLUTION_FILE" },
     "M4_cross_repo_freshness": { "value": $m4, "age_seconds": "$age_seconds" }
   },
   "score": $score,
@@ -205,7 +209,7 @@ else
   printf "%-32s %-8s %s\n" "--------------------------------" "--------" "----------------------------------------"
   printf "%-32s %-8s %d/%d 协议被引用\n" "M1 协议使用率" "$m1" "$protocol_referenced" "$protocol_total"
   printf "%-32s %-8s %d/%d 空目录有 README\n" "M2 空目录诚实率" "$m2" "$empty_with_readme" "$empty_total"
-  printf "%-32s %-8s %d/%d commit 涉及 evolution\n" "M3 evolution 同步率" "$m3" "$evolution_commits" "$total_commits"
+  printf "%-32s %-8s %d/%d commit 实际更新 evolution.md\n" "M3 evolution 同步率" "$m3" "$evolution_commits" "$total_commits"
   printf "%-32s %-8s age=%ss (24h=1.0, 3d=0.5, 7d=0.25)\n" "M4 跨仓状态新鲜度" "$m4" "$age_seconds"
   echo
   printf "%-32s ${BOLD}%-8s${RESET}\n" "综合分 (M1-M4 等权平均)" "$score"

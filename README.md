@@ -59,7 +59,7 @@
 30-protocols/       协议 [active v0.8.16] — insight-extraction-protocol
 40-experiments/     实验 [active v0.8.16] — Q+R 实证记录
 50-metrics/         指标 [active v0.8.20] — completeness-metrics (M1-M4) + 可机读
-60-tools/           工具 [active v0.8.20] — cross-repo-status.md + completeness-check.md 契约
+60-tools/           工具 [active v0.8.21] — cross-repo-status.md + completeness-check.md 契约 (M3 算法修正)
 70-artifacts/       制品 [active v0.8.17] — cross-repo-status-archive 已实施
 80-meta/            元思考：我们怎么研究、为什么这么分
 90-conventions/     约定 [active v0.8.17] — context-snapshot-template + contributing
@@ -97,6 +97,8 @@
 | **v0.8.17** | 2026-07-05 | 填实顺序协调（顿悟 T）：3 子问题 (WHEN/WHO/HOW) + 6 步流程 + cross-repo-status --archive 实施 + 90-conventions README |
 | **v0.8.18** | 2026-07-07 | 抽象层抽取（顿悟 U）：T 协议实施第一步 — role-dimension-matrix.md (3 角色 × 10 维度 = 30 单元) |
 | **v0.8.19** | 2026-07-07 | 工具契约化（顿悟 V）：60-tools/ 填实 — cross-repo-status.md 契约 + 收录标准 + 与其他目录关系 |
+| **v0.8.20** | 2026-07-08 | 指标可机读化（顿悟 W）：completeness-check.sh + completeness-metrics.md [active] |
+| **v0.8.21** | 2026-07-09 | 指标测错对象修正（顿悟 X）：M3 算法从 commit msg grep 改为 diff-filter=AM on evolution.md；目标 70%→50%；新增 evolution-sync-protocol.md |
 | **v0.9** | 计划 | 多 writer 协调协议（顿悟 R 预测） |
 | **v0.10+** | 待定 | LLM/意识/跨方向交叉 |
 

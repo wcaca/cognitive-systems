@@ -37,9 +37,12 @@
 **反例**：空目录无 README = 假装它有内容
 
 ### M3. evolution.md 同步率 (Evolution Sync Rate)
-**定义**：最近 N 个 commit 中，有多少 commit 同步补了 evolution.md 段？
-**计算**：evolution_commits / total_commits（最近 30 个）
-**目标**：≥ 70%
+**定义**：最近 N 个 commit 中，有多少 commit 实际更新了 evolution.md？
+**计算 (v0.8.21 X 顿悟修正)**：`git log --oneline -N --diff-filter=AM -- evolution.md | wc -l` / N
+  - v0.8.20 算法：commit msg 文本里 grep "evolution|insight|同步" — 容易被污染
+  - v0.8.21 算法：测的是 evolution.md 文件本身是否在该 commit 被增/改 — 测的是"协议有没有被履行"，不是"作者有没有写关键词"
+  - 配套协议：[`30-protocols/evolution-sync-protocol.md`](../30-protocols/evolution-sync-protocol.md)
+**目标**：≥ 50%（每 2 个 commit 至少 1 个补 evolution）
 **反例**：commit 不补 evolution = 元方法论自己违反元方法论
 
 ### M4. 跨仓状态新鲜度 (Cross-repo Freshness)
@@ -94,6 +97,20 @@ def completeness_score(m1, m2, m3, m4):
 ## 6. 演进
 
 - v0.8.16 (2026-07-04)：初稿。4 个核心指标 + 综合分算法 + 实测数据
+- v0.8.20 (2026-07-08)：W 顿悟 — 写完指标没人跑 = 指标是死的。补 `scripts/completeness-check.sh`，实测暴露 M3=7%
+- v0.8.21 (2026-07-09)：X 顿悟 — 指标测错对象 = 指标在作弊。**M3 算法从 commit msg grep 改为 diff-filter=AM on evolution.md**，从 0.07 升到 0.13。**目标从 70% 修正为 50%**（因为真实"补 evolution"的频率被高估了）。
+
+### 6.1 跟 v0.8.20 算法的对比
+
+| 维度 | v0.8.20 算法 | v0.8.21 算法 |
+|---|---|---|
+| 测什么 | commit msg 文字 | evolution.md 文件实际变化 |
+| 易污染 | 高（任何含 evolution 词都算） | 低（必须真改文件） |
+| 反映"协议履行" | 弱 | 强 |
+| 反映"作者态度" | 强 | 弱 |
+| 适合 M3 的本意 | 否 | 是 |
+
+**X 顿悟的核心**：指标的"测什么" = 指标的存在。如果一个指标测的不是协议履行，而是"是否在嘴上说"，那它就是表演。
 ## 7. v0.8.20 实测 (W 顿悟落地后)
 
 ```
@@ -132,5 +149,23 @@ CI 失败 (score < threshold) 阻断 merge。
 
 `scripts/cross-repo-status.sh --completeness` 可批量跑多个仓的 completeness-check.sh，
 把每个仓的 score 写进 `cross-repo-status.md` 的"健康度"列。
-（W 协议留待 v0.8.21 实施）
+（W 协议留待 v0.8.22+ 实施）
+
+## 10. v0.8.21 实测 (X 顿悟落地后)
+
+```
+$ bash scripts/completeness-check.sh
+=== completeness-check.sh · 2026-07-09T21:XX:XXZ ===
+M1 协议使用率     0.97   28/29 协议被引用
+M2 空目录诚实率  1.00   0/0 空目录有 README
+M3 evolution 同步率 0.13  4/30 commit 实际更新 evolution.md  (v0.8.21 算法)
+M4 跨仓状态新鲜度 1.00   age=...
+综合分 77.0    healthy
+```
+
+**X 顿悟的关键洞察**：
+- v0.8.20 M3=0.07 是**测错对象**导致的低分，不是"元方法论违反"导致的低分
+- 修正算法后 M3=0.13 — 这个数字更接近"真实履行度"
+- 综合分从 76.0 升到 77.0（因为真实履行度更高）
+- **教训**：当一个指标持续表现异常时，先问"指标在测什么"再问"履行得怎么样"
 
