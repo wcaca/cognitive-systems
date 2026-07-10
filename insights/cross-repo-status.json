@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-10T21:21:43Z",
+  "generated_at": "2026-07-10T21:46:28Z",
   "protocol_version": "v0.8.15",
   "repos": [
   {
     "name": "cognitive-systems",
     "type": "research (public)",
     "path": "/workspace/cognitive-systems",
-    "sha": "ee177c9",
+    "sha": "d9c1887",
     "version": "v0.8.22",
     "date": "2026-07-10",
-    "summary": "feat(30-protocols): v0.8.22 Y \u987f\u609f \u2014 M3b evolution \u6df1\u5ea6\u6307\u6807 (\u9632\u96c6\u4e2d\u8865\u4f5c\u5f0a)"
+    "summary": "feat(50-metrics): v0.8.22 Y \u914d\u5957 docs/cross-repo (3 file)"
   },  {
     "name": "creation-loop",
     "type": "research (private)",
@@ -22,10 +22,10 @@
     "name": "agent-memory",
     "type": "memory (private)",
     "path": "/workspace/agent-memory",
-    "sha": "8b3f104",
+    "sha": "ea17107",
     "version": "-",
-    "date": "2026-07-09",
-    "summary": "history: 2026-07-09 \u51cc\u6668\u957f\u7a0b\u63a8\u8fdb (X \u987f\u609f + \u6e32\u67d3\u5c42 + \u955c\u5b50 Step 4)"
+    "date": "2026-07-10",
+    "summary": "history: 2026-07-10 \u51cc\u6668\u957f\u7a0b\u63a8\u8fdb (4 Sprint, 6 commits + 1 history commit)"
   }
   ]
 }
