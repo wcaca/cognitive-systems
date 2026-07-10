@@ -1,31 +1,23 @@
 {
-  "generated_at": "2026-07-09T21:28:23Z",
+  "generated_at": "2026-07-10T21:21:43Z",
   "protocol_version": "v0.8.15",
   "repos": [
   {
     "name": "cognitive-systems",
     "type": "research (public)",
     "path": "/workspace/cognitive-systems",
-    "sha": "b3114e2",
-    "version": "v0.8.21",
-    "date": "2026-07-09",
-    "summary": "auto(cross-repo): refresh after v0.8.21 + 3 \u4ed3\u63a8\u8fdb"
-  },  {
-    "name": "sas-graph",
-    "type": "research (private)",
-    "path": "/workspace/sas-graph",
-    "sha": "06019cf",
-    "version": "v0.6.19",
-    "date": "2026-07-03",
-    "summary": "fix(scripts): parse_version \u6392\u9664 'after/before/from <\u4ed3\u540d> vX.Y' \u5f15\u7528"
+    "sha": "ee177c9",
+    "version": "v0.8.22",
+    "date": "2026-07-10",
+    "summary": "feat(30-protocols): v0.8.22 Y \u987f\u609f \u2014 M3b evolution \u6df1\u5ea6\u6307\u6807 (\u9632\u96c6\u4e2d\u8865\u4f5c\u5f0a)"
   },  {
     "name": "creation-loop",
     "type": "research (private)",
     "path": "/workspace/creation-loop",
-    "sha": "f2ec7c4",
+    "sha": "82f2594",
     "version": "v1.0",
-    "date": "2026-07-08",
-    "summary": "state: refresh inbox count 2\u21923, creator tick 2026-07-08"
+    "date": "2026-07-10",
+    "summary": "creator tick 2026-07-10: \"\u542c\u89c1\u9694\u58c1\" \u5165 inbox"
   },  {
     "name": "agent-memory",
     "type": "memory (private)",

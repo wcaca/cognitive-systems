@@ -45,6 +45,18 @@
 **目标**：≥ 50%（每 2 个 commit 至少 1 个补 evolution）
 **反例**：commit 不补 evolution = 元方法论自己违反元方法论
 
+### M3b. evolution.md 深度 (Evolution Depth) — v0.8.22 Y 顿悟新增
+**定义**：每次 evolution 提交平均 + 字符数 = 总 + 字符 / evolution 提交数
+**计算**：`git log -N --diff-filter=AM --numstat -- evolution.md` → awk 算 avg
+**阈值**：
+  - ≥ 100 chars/提交 = 合格 (M3b = 1.0)
+  - < 100 chars/提交 = 线性 0~1
+  - = 0 chars/提交 = 0
+**为什么需要 M3b**：X 协议只测频次，防不了"集中补" — 高频空话
+**配套协议**：[`30-protocols/evolution-depth-protocol.md`](../30-protocols/evolution-depth-protocol.md)
+**反例**：25/30 commit 补 evolution 但每次 + 20 chars = 0.20 M3b, 是作弊
+**实测 (v0.8.22)**：5/30 commit 补, avg +190 chars = M3b=1.00, 综合分 77.5 → 82.8
+
 ### M4. 跨仓状态新鲜度 (Cross-repo Freshness)
 **定义**：`insights/cross-repo-status.md` 的最后更新时间距今多少？
 **计算**：`now - last_modified`
@@ -55,16 +67,26 @@
 
 ## 3. 怎么算综合完整性分
 
+**v0.8.22 起 (5 指标)**:
+
 ```python
-def completeness_score(m1, m2, m3, m4):
-    """综合完整性分 0-100"""
+def completeness_score(m1, m2, m3, m3b, m4):
+    """综合完整性分 0-100 (v0.8.22+ 5 指标)"""
     score = (
-        m1 * 0.25 +  # 协议使用率
-        m2 * 0.25 +  # 空目录诚实率
-        m3 * 0.25 +  # evolution 同步率
-        m4 * 0.25    # 跨仓状态新鲜度
+        m1  * 0.20 +  # 协议使用率
+        m2  * 0.20 +  # 空目录诚实率
+        m3  * 0.20 +  # evolution 同步率 (频次)
+        m3b * 0.20 +  # evolution 深度 (v0.8.22 新增)
+        m4  * 0.20    # 跨仓状态新鲜度
     )
     return round(score * 100, 1)
+```
+
+**v0.8.20-0.8.21 (4 指标)**:
+```python
+def completeness_score_v1(m1, m2, m3, m4):
+    """4 指标版, v0.8.22 后遗弃 (合频次不深度 = 作弊漏洞)"""
+    return round((m1 + m2 + m3 + m4) / 4 * 100, 1)
 ```
 
 **目标**：≥ 75 = 健康，60-75 = 警告，< 60 = 不健康
@@ -149,7 +171,7 @@ CI 失败 (score < threshold) 阻断 merge。
 
 `scripts/cross-repo-status.sh --completeness` 可批量跑多个仓的 completeness-check.sh，
 把每个仓的 score 写进 `cross-repo-status.md` 的"健康度"列。
-（W 协议留待 v0.8.22+ 实施）
+**v0.8.22 起 5 指标，W 协议完整实施完毕**
 
 ## 10. v0.8.21 实测 (X 顿悟落地后)
 
@@ -168,4 +190,32 @@ M4 跨仓状态新鲜度 1.00   age=...
 - 修正算法后 M3=0.13 — 这个数字更接近"真实履行度"
 - 综合分从 76.0 升到 77.0（因为真实履行度更高）
 - **教训**：当一个指标持续表现异常时，先问"指标在测什么"再问"履行得怎么样"
+
+## 11. v0.8.22 实测 (Y 顿悟落地后)
+
+```
+$ bash scripts/completeness-check.sh
+=== completeness-check.sh · 2026-07-10T21:XX:XXZ ===
+M1 协议使用率     0.97   28/29 协议被引用
+M2 空目录诚实率  1.00   0/0 空目录有 README
+M3 evolution 同步率 0.17  5/30 commit 实际更新 evolution.md  (X 算法不变)
+M3b evolution 深度 1.00  avg +190 chars/提交 (min 100)  (Y 新增)
+M4 跨仓状态新鲜度 1.00   age=...
+综合分 82.8    healthy
+```
+
+**Y 顿悟的关键洞察**：
+- X 协议 M3 测频次，5/30 = 0.17 (低频但合规)
+- Y 协议 M3b 测深度，avg +190 chars/提交 = 1.00 (真在写, 不凑数)
+- X+Y = 0.17 + 1.00 = 不是 0.585 凑合格, 是"少而精"模式
+- 综合分从 77.5 (X) 升到 82.8 (Y) — M3b 加权后体系更鲁棒
+- **教训**：高频空话 (25/30 补, 每次 +20 chars) = 0.83 × 0.20 = 凑合格, Y 把它拆穿
+
+## 12. 已知未知 (Z/AA/Y.1 伏笔)
+
+- Y.1 候选：模板多样性检测 — 同模板多次写 = 高 avg chars 但低多样性 = 仍可能作弊
+- Z 协议 v0.8.23+：CI enforcement 强制 feat/fix commit 必须补 evolution
+- AA 协议 v0.8.24+：跨仓 4 仓 M3b 一致性 enforcement
+- 100 字符阈值: 未来多仓数据后可能调到 150 或 200
+- AI 辅助写 evolution 时"深度"的归属 — 未决
 
