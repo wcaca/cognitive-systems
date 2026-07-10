@@ -39,8 +39,10 @@
 - **v0.8.18 抽象层抽取**（U 顿悟）：T 协议实施第一步 — 抽 20-systems/agent-harness 重复模式到 10-frameworks/role-dimension-matrix.md (3 角色 × 10 维度 = 30 单元矩阵)。填实 10-frameworks 目录第一步 ([empty] → [active v0.8.18])
 - **v0.8.19 工具契约化**（V 顿悟）：填实 60-tools/ 目录 ([empty] → [active v0.8.19]) — 收录 cross-repo-status.md 契约 (路径不动, scripts/ 仍在, 60-tools/ 只放契约)
 - **v0.8.20 指标可机读化**（W 顿悟）：50-metrics/completeness-metrics.md 从 [draft] 升级为 [active]，补可机读实现 `scripts/completeness-check.sh`（M1-M4 4 指标 + 综合分 0-100 + JSON 输出）。填实 60-tools/ 第二篇契约 `completeness-check.md`。**核心：指标不被自动化 = 指标不存在**
-- **总文件数**：约 80 个（v0.8.20 +4）
-- **总 commit 数**：约 46+（v0.8.20 +2）
+- **v0.8.21 指标测错对象修正**（X 顿悟）：M3 算法从 commit msg grep 改为 diff-filter=AM on evolution.md — 测的是"协议有没有被履行"不是"作者有没有写关键词"
+- **v0.8.22 指标防集中补作弊**（Y 顿悟）：增 M3b 深度指标（avg + 字符数 / 100）— 5 指标等权，综合分 77.5→82.8 healthy。**核心：X 抓"说不说"，Y 抓"说得有没有"**
+- **总文件数**：约 81 个（v0.8.22 +1）
+- **总 commit 数**：约 50+（v0.8.22 +1）
 - **公开性**：public，欢迎讨论与共建
 
 ### 跨仓状态
@@ -99,6 +101,7 @@
 | **v0.8.19** | 2026-07-07 | 工具契约化（顿悟 V）：60-tools/ 填实 — cross-repo-status.md 契约 + 收录标准 + 与其他目录关系 |
 | **v0.8.20** | 2026-07-08 | 指标可机读化（顿悟 W）：completeness-check.sh + completeness-metrics.md [active] |
 | **v0.8.21** | 2026-07-09 | 指标测错对象修正（顿悟 X）：M3 算法从 commit msg grep 改为 diff-filter=AM on evolution.md；目标 70%→50%；新增 evolution-sync-protocol.md |
+| **v0.8.22** | 2026-07-10 | 指标防集中补作弊（顿悟 Y）：增 M3b 深度指标（avg + 字符数 / 100）；5 指标等权；综合分 77.5→82.8 healthy |
 | **v0.9** | 计划 | 多 writer 协调协议（顿悟 R 预测） |
 | **v0.10+** | 待定 | LLM/意识/跨方向交叉 |
 
