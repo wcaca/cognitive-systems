@@ -142,13 +142,40 @@ m2=$(awk -v with="$empty_with_readme" -v total="$empty_total" \
 # v0.8.21 算法: 测 evolution.md 在该 commit 是否被实际更新 (--diff-filter=AM)
 #   - 更准确: 测的是"协议有没有被履行", 而不是"作者有没有写关键词"
 #   - 配套协议: 30-protocols/evolution-sync-protocol.md
+# v0.8.22 Y 顿悟: 增 M3b (深度) = evolution 提交平均 +/- 字符数
+#   - 修 1 个隐藏洞: X 算法只测"频次", 防不了"集中补" — 一周集中 1 次写 5KB = 50% 同步率
+#   - 频次合规 + 深度合规 = 真合规; 只频次不深度 = 作弊
+#   - 阈值 100 字符: 低于 = "凑数" 信号, 高于 = 真有思考
 # 默认 evolution.md 路径; 可通过 EVOLUTION_FILE 环境变量覆盖
 EVOLUTION_FILE="${EVOLUTION_FILE:-20-systems/agent-harness/evolution.md}"
+MIN_EVOLUTION_DELTA=100  # Y 顿悟 v0.8.22: 每次 evolution 提交的平均 +/- 字符下限
 total_commits=$(git log --oneline -"$DEFAULT_N_COMMITS" 2>/dev/null | wc -l)
 evolution_commits=$(git log --oneline -"$DEFAULT_N_COMMITS" --diff-filter=AM -- "$EVOLUTION_FILE" 2>/dev/null | wc -l)
 
 m3=$(awk -v evo="$evolution_commits" -v total="$total_commits" \
   'BEGIN { if (total > 0) printf "%.2f", evo/total; else print "0.00" }')
+
+# ===== M3b evolution 深度 (v0.8.22 Y 顿悟新增) =====
+# 计算每个 evolution 提交的实际 +/- 字符数
+# numstat 输出格式: "added\tremoved\t<file>"
+# 取最近 N 个 evolution commit 的 numstat, 计算平均 + 字符数
+if [[ $evolution_commits -gt 0 ]]; then
+  evolution_added=$(git log -"$DEFAULT_N_COMMITS" --diff-filter=AM --numstat -- "$EVOLUTION_FILE" 2>/dev/null \
+    | awk -v f="$EVOLUTION_FILE" '$3 == f { added += $1 } END { print added+0 }')
+  avg_evolution_added=$(awk -v added="$evolution_added" -v count="$evolution_commits" \
+    'BEGIN { if (count > 0) printf "%.0f", added/count; else print "0" }')
+  # m3b = 1.0 if avg >= MIN_EVOLUTION_DELTA, 0.0 if avg == 0, else 线性 0~1
+  m3b=$(awk -v avg="$avg_evolution_added" -v min="$MIN_EVOLUTION_DELTA" \
+    'BEGIN {
+      if (avg+0 == 0) print "0.00"
+      else if (avg+0 >= min+0) print "1.00"
+      else printf "%.2f", avg/min
+    }')
+else
+  m3b="0.00"
+  avg_evolution_added="0"
+  evolution_added="0"
+fi
 
 # ===== M4 跨仓状态新鲜度 =====
 # 检查 insights/cross-repo-status.md 存在性 + 最后修改时间
@@ -173,8 +200,10 @@ else
 fi
 
 # ===== 综合分 =====
-score=$(awk -v a="$m1" -v b="$m2" -v c="$m3" -v d="$m4" \
-  'BEGIN { printf "%.1f", (a+b+c+d)/4*100 }')
+# v0.8.22 Y 顿悟: M3b 计入综合分, 现在 5 指标 (M1/M2/M3/M3b/M4)
+# M3 (频次) 和 M3b (深度) 都合格 = evolution 真的在被有意识地写
+score=$(awk -v a="$m1" -v b="$m2" -v c="$m3" -v d="$m3b" -v e="$m4" \
+  'BEGIN { printf "%.1f", (a+b+c+d+e)/5*100 }')
 
 # ===== 健康判断 =====
 health="unhealthy"
@@ -194,6 +223,7 @@ if [[ "$JSON_MODE" == "true" ]]; then
     "M1_protocol_adoption": { "value": $m1, "referenced": $protocol_referenced, "total": $protocol_total },
     "M2_skeleton_honesty": { "value": $m2, "with_readme": $empty_with_readme, "empty_total": $empty_total },
     "M3_evolution_sync": { "value": $m3, "evolution_commits": $evolution_commits, "total_commits": $total_commits, "algorithm": "diff-filter-AM on $EVOLUTION_FILE" },
+    "M3b_evolution_depth": { "value": $m3b, "avg_added_chars": $avg_evolution_added, "min_threshold": $MIN_EVOLUTION_DELTA, "algorithm": "numstat avg of evolution commits" },
     "M4_cross_repo_freshness": { "value": $m4, "age_seconds": "$age_seconds" }
   },
   "score": $score,
@@ -210,9 +240,10 @@ else
   printf "%-32s %-8s %d/%d 协议被引用\n" "M1 协议使用率" "$m1" "$protocol_referenced" "$protocol_total"
   printf "%-32s %-8s %d/%d 空目录有 README\n" "M2 空目录诚实率" "$m2" "$empty_with_readme" "$empty_total"
   printf "%-32s %-8s %d/%d commit 实际更新 evolution.md\n" "M3 evolution 同步率" "$m3" "$evolution_commits" "$total_commits"
+  printf "%-32s %-8s avg +%s chars/提交 (min %s)\n" "M3b evolution 深度 (Y v0.8.22)" "$m3b" "$avg_evolution_added" "$MIN_EVOLUTION_DELTA"
   printf "%-32s %-8s age=%ss (24h=1.0, 3d=0.5, 7d=0.25)\n" "M4 跨仓状态新鲜度" "$m4" "$age_seconds"
   echo
-  printf "%-32s ${BOLD}%-8s${RESET}\n" "综合分 (M1-M4 等权平均)" "$score"
+  printf "%-32s ${BOLD}%-8s${RESET}\n" "综合分 (M1-M4+M3b 等权平均)" "$score"
 
   case "$health" in
     healthy)

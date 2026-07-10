@@ -945,3 +945,43 @@ W 顿悟实施后，completeness-check.sh 实测暴露 M3 evolution 同步率 0.
 - **Y 顿悟 (v0.8.22)**：content-length 阈值检测"集中补作弊"——evolution.md 的每次修改至少 ≥ 100 字符
 - **Z 顿悟 (v0.8.23+)**：CI enforcement 强制 `feat:` commit 没补 evolution.md = 阻断 push
 - **AA 顿悟 (v0.8.24+)**：跨仓 enforcement——所有 4 仓的 M3 必须 ≥ 50% 才算 4 仓体系健康
+
+## v0.8.22 · Y 顿悟 (本文)
+
+### 目的
+修正 X 顿悟的隐藏漏洞：X 只测频次，禁不了"集中补"。Y = 测深度 (avg + 字符数)。
+
+### 当时的状态
+- 已有：X 协议 (M3 频次 = diff-filter=AM)
+- 已有：completeness-check.sh M1-M4 (4 指标)
+- 缺：M3b 深度 = 防"集中补作弊" (高频空话)
+
+### 方法
+1. **加指标**：M3b = min(1.0, avg_added_chars / 100)。100 字符是合格下限。
+2. **改综合分**：4 指标 → 5 指标 (M1 + M2 + M3 + M3b + M4) / 5
+3. **写协议**：30-protocols/evolution-depth-protocol.md
+4. **实测**：M3b=1.00 (avg +190 chars), 综合分 77.5 → 82.8 healthy
+
+### 已知未知 (Z/AA 伏笔)
+- 100 字符阈值是否合理? — 需要多仓数据
+- AI 辅助写 evolution 时，"深度"是 AI 深度还是人深度? — 未决
+- 模板化写作: 同模板多次 = 高 avg chars 但低多样性 — **Y.1 候选**
+- 跨仓 4 仓 M3b 一致性? — Z/AA 协议
+
+### 历史
+- v0.8.18: 抽象层抽取 (U)
+- v0.8.19: 工具契约化 (V)
+- v0.8.20: 指标可机读化 (W)
+- v0.8.21: 指标测错对象修正 (X)
+- **v0.8.22: 指标防集中补作弊 (Y) — 本文**
+
+### 做了什么
+1. `scripts/completeness-check.sh` 加 M3b 段 (numstat + awk)
+2. `30-protocols/evolution-depth-protocol.md` (2KB, Y 协议主文档)
+3. `30-protocols/README.md` 加 Y 协议索引
+4. `20-systems/agent-harness/evolution.md` 补 v0.8.22 段 (本文)
+5. 综合分重算: 5 指标等权
+
+### 基调
+"X 抓'说不说', Y 抓'说得有没有'。X+Y = evolution 协议真正诚实。"
+
