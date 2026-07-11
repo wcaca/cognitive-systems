@@ -1,23 +1,39 @@
 {
-  "generated_at": "2026-07-10T21:46:28Z",
+  "generated_at": "2026-07-11T22:00:00Z",
   "protocol_version": "v0.8.15",
   "repos": [
   {
     "name": "cognitive-systems",
     "type": "research (public)",
     "path": "/workspace/cognitive-systems",
-    "sha": "d9c1887",
+    "sha": "b1cc285",
     "version": "v0.8.22",
     "date": "2026-07-10",
-    "summary": "feat(50-metrics): v0.8.22 Y \u914d\u5957 docs/cross-repo (3 file)"
+    "summary": "v0.8.22 Y 顿悟已沉淀, 准备 Z 顿悟"
   },  {
-    "name": "creation-loop",
-    "type": "research (private)",
-    "path": "/workspace/creation-loop",
-    "sha": "82f2594",
-    "version": "v1.0",
-    "date": "2026-07-10",
-    "summary": "creator tick 2026-07-10: \"\u542c\u89c1\u9694\u58c1\" \u5165 inbox"
+    "name": "thoughtspace-notes",
+    "type": "research (public)",
+    "path": "/workspace/thoughtspace-notes",
+    "sha": "cc30c51",
+    "version": "S2.10",
+    "date": "2026-07-11",
+    "summary": "S2.10 render-pipeline 帧调度 (5阶段+16ms预算) + 修 S2 @note 治理债 7 错 + 补 pixi.js 漏依赖"
+  },  {
+    "name": "system-self",
+    "type": "production (private)",
+    "path": "/workspace/scout/system-self",
+    "sha": "aa4094a",
+    "version": "v25dt++",
+    "date": "2026-07-11",
+    "summary": "cobweb v25dt++ AI 诊断 (端点 + UI 面板) + 部署 C9 Step 1-4 RFL 镜子原则"
+  },  {
+    "name": "beauty-crm",
+    "type": "production (public)",
+    "path": "/workspace/scout/beauty-crm",
+    "sha": "e2a5dbc",
+    "version": "v27",
+    "date": "2026-07-07",
+    "summary": "v27 已部署, 评分 8/10, 待推进 iPad 适配 + 虚拟滚动 + PWA 离线 (7→8)"
   },  {
     "name": "agent-memory",
     "type": "memory (private)",
@@ -25,7 +41,7 @@
     "sha": "ea17107",
     "version": "-",
     "date": "2026-07-10",
-    "summary": "history: 2026-07-10 \u51cc\u6668\u957f\u7a0b\u63a8\u8fdb (4 Sprint, 6 commits + 1 history commit)"
+    "summary": "2026-07-10 凌晨长程推进 (4 Sprint, 6 commits + 1 history commit), 等今晚 history 推送"
   }
   ]
 }
