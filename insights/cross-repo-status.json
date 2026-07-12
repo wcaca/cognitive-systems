@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-12T21:22:03Z",
+  "generated_at": "2026-07-12T21:26:53Z",
   "protocol_version": "v0.8.15",
   "repos": [
   {
     "name": "cognitive-systems",
     "type": "research (public)",
     "path": "/workspace/scout/cognitive-systems",
-    "sha": "0a2512c",
+    "sha": "39a27d3",
     "version": "v0.8.23",
     "date": "2026-07-12",
-    "summary": "feat(s2): v0.8.23 \u6c89\u6dc0 S2.11+S2.12 \u5b9e\u9a8c\u89c4\u5212 + cross-repo \u72b6\u6001 refresh"
+    "summary": "auto(cross-repo): refresh status 4 commits 2026-07-12 (1b74103 / 570d06d / 98e687f / 0a2512c)"
   },  {
     "name": "thoughtspace-notes",
     "type": "app (private)",
@@ -38,10 +38,10 @@
     "name": "agent-memory",
     "type": "memory (private)",
     "path": "/workspace/scout/agent-memory",
-    "sha": "1153547",
+    "sha": "9e2d920",
     "version": "-",
     "date": "2026-07-12",
-    "summary": "snapshot(2026-07-12): tarball fallback \u6062\u590d working tree (\u6c99\u7bb1 git protocol \u4e0d\u901a)"
+    "summary": "history: 2026-07-12 \u51cc\u6668 5 \u70b9\u957f\u7a0b\u63a8\u8fdb (5 commit \u63a8\u8fdc\u7aef + 1 \u7559\u6c99\u7bb1)"
   }
   ]
 }
