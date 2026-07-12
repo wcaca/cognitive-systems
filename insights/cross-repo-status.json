@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-12T21:13:48Z",
+  "generated_at": "2026-07-12T21:22:03Z",
   "protocol_version": "v0.8.15",
   "repos": [
   {
     "name": "cognitive-systems",
     "type": "research (public)",
     "path": "/workspace/scout/cognitive-systems",
-    "sha": "f5437c3",
+    "sha": "0a2512c",
     "version": "v0.8.23",
     "date": "2026-07-12",
-    "summary": "feat(cross-repo): v0.8.23 \u7ef4\u62a4\u8303\u56f4 4\u21925 \u4ed3 (\u65b0\u589e thoughtspace-notes/beauty-crm/system-self)"
+    "summary": "feat(s2): v0.8.23 \u6c89\u6dc0 S2.11+S2.12 \u5b9e\u9a8c\u89c4\u5212 + cross-repo \u72b6\u6001 refresh"
   },  {
     "name": "thoughtspace-notes",
     "type": "app (private)",
@@ -22,18 +22,18 @@
     "name": "beauty-crm",
     "type": "app (public)",
     "path": "/workspace/scout/beauty-crm",
-    "sha": "e2a5dbc",
+    "sha": "98e687f",
     "version": "-",
-    "date": "2026-07-07",
-    "summary": "fix(beauty-crm): version.json version 25\u219226 \u8ddf package.json \u4e00\u81f4 (v27, 2026-07-07)"
+    "date": "2026-07-12",
+    "summary": "docs(security): sync_token XSS \u98ce\u9669\u8bc4\u4f30 + v28 HttpOnly \u4fee\u590d\u89c4\u5212"
   },  {
     "name": "system-self",
     "type": "app (private)",
     "path": "/workspace/scout/system-self",
-    "sha": "aa4094a",
+    "sha": "1b74103",
     "version": "-",
-    "date": "2026-07-11",
-    "summary": "feat(system-self): cobweb v25dt++ AI \u8bca\u65ad (\u7aef\u70b9 + UI \u9762\u677f)"
+    "date": "2026-07-12",
+    "summary": "feat(cobweb): v25dt++ \u65f6\u95f4\u8f74 slider \u53cc\u5411 + \u8de8\u7a97\u8fb9\u9ad8\u4eae\u8054\u52a8"
   },  {
     "name": "agent-memory",
     "type": "memory (private)",
