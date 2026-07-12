@@ -31,9 +31,13 @@ REPO_PARENT="$(cd "$REPO_ROOT/.." && pwd)"
 
 DEFAULT_REPOS=(
   "$REPO_PARENT/cognitive-systems"
-  "$REPO_PARENT/sas-graph"
-  "$REPO_PARENT/creation-loop"
+  "$REPO_PARENT/thoughtspace-notes"
+  "$REPO_PARENT/beauty-crm"
+  "$REPO_PARENT/system-self"
   "$REPO_PARENT/agent-memory"
+  # v0.8.23 起标记 deprecated: 不再主动维护
+  # "$REPO_PARENT/sas-graph"
+  # "$REPO_PARENT/creation-loop"
 )
 
 REPOS=("${DEFAULT_REPOS[@]}")
@@ -143,15 +147,23 @@ run_archive() {
 # 元数据: 按 basename 查找
 declare -A DISPLAY_NAMES_BY_BASENAME=(
   ["cognitive-systems"]="cognitive-systems"
+  ["thoughtspace-notes"]="thoughtspace-notes"
+  ["beauty-crm"]="beauty-crm"
+  ["system-self"]="system-self"
+  ["agent-memory"]="agent-memory"
+  # v0.8.23 起 deprecated
   ["sas-graph"]="sas-graph"
   ["creation-loop"]="creation-loop"
-  ["agent-memory"]="agent-memory"
 )
 declare -A REPO_TYPES_BY_BASENAME=(
   ["cognitive-systems"]="research (public)"
-  ["sas-graph"]="research (private)"
-  ["creation-loop"]="research (private)"
+  ["thoughtspace-notes"]="app (private)"
+  ["beauty-crm"]="app (public)"
+  ["system-self"]="app (private)"
   ["agent-memory"]="memory (private)"
+  # v0.8.23 起 deprecated
+  ["sas-graph"]="research (deprecated)"
+  ["creation-loop"]="research (deprecated)"
 )
 
 display_name() {
@@ -289,7 +301,10 @@ echo ""
   echo "> **生成时间**: $TIMESTAMP"
   echo "> **协议版本**: v0.8.15"
   echo ""
-  echo "## 4 个仓的最新状态"
+  echo "## 5 个活跃仓 + 2 个 deprecated 仓的最新状态"
+  echo ""
+  echo "> v0.8.23 起, 维护范围从 4 仓扩到 5 仓 (新增 thoughtspace-notes / beauty-crm / system-self),"
+  echo "> sas-graph 和 creation-loop 标记 deprecated, 不再主动 commit 同步。"
   echo ""
   echo "| 仓 | 类型 | 最新 commit | 版本 | 日期 | 主题 |"
   echo "|---|---|---|---|---|---|"

@@ -1,47 +1,47 @@
 {
-  "generated_at": "2026-07-11T22:00:00Z",
+  "generated_at": "2026-07-12T21:11:25Z",
   "protocol_version": "v0.8.15",
   "repos": [
   {
     "name": "cognitive-systems",
     "type": "research (public)",
-    "path": "/workspace/cognitive-systems",
-    "sha": "b1cc285",
+    "path": "/workspace/scout/cognitive-systems",
+    "sha": "bb0db7a",
     "version": "v0.8.22",
-    "date": "2026-07-10",
-    "summary": "v0.8.22 Y 顿悟已沉淀, 准备 Z 顿悟"
+    "date": "2026-07-11",
+    "summary": "auto(cross-repo): refresh after thoughtspace-notes S2.10 + system-self v25dt++ (2026-07-11)"
   },  {
     "name": "thoughtspace-notes",
-    "type": "research (public)",
-    "path": "/workspace/thoughtspace-notes",
-    "sha": "cc30c51",
-    "version": "S2.10",
-    "date": "2026-07-11",
-    "summary": "S2.10 render-pipeline 帧调度 (5阶段+16ms预算) + 修 S2 @note 治理债 7 错 + 补 pixi.js 漏依赖"
-  },  {
-    "name": "system-self",
-    "type": "production (private)",
-    "path": "/workspace/scout/system-self",
-    "sha": "aa4094a",
-    "version": "v25dt++",
-    "date": "2026-07-11",
-    "summary": "cobweb v25dt++ AI 诊断 (端点 + UI 面板) + 部署 C9 Step 1-4 RFL 镜子原则"
+    "type": "app (private)",
+    "path": "/workspace/scout/thoughtspace-notes",
+    "sha": "2a7917d",
+    "version": "-",
+    "date": "2026-07-12",
+    "summary": "snapshot(2026-07-12): tarball fallback \u6062\u590d working tree (\u6c99\u7bb1 git protocol \u4e0d\u901a)"
   },  {
     "name": "beauty-crm",
-    "type": "production (public)",
+    "type": "app (public)",
     "path": "/workspace/scout/beauty-crm",
     "sha": "e2a5dbc",
-    "version": "v27",
+    "version": "-",
     "date": "2026-07-07",
-    "summary": "v27 已部署, 评分 8/10, 待推进 iPad 适配 + 虚拟滚动 + PWA 离线 (7→8)"
+    "summary": "fix(beauty-crm): version.json version 25\u219226 \u8ddf package.json \u4e00\u81f4 (v27, 2026-07-07)"
+  },  {
+    "name": "system-self",
+    "type": "app (private)",
+    "path": "/workspace/scout/system-self",
+    "sha": "aa4094a",
+    "version": "-",
+    "date": "2026-07-11",
+    "summary": "feat(system-self): cobweb v25dt++ AI \u8bca\u65ad (\u7aef\u70b9 + UI \u9762\u677f)"
   },  {
     "name": "agent-memory",
     "type": "memory (private)",
-    "path": "/workspace/agent-memory",
-    "sha": "ea17107",
+    "path": "/workspace/scout/agent-memory",
+    "sha": "1153547",
     "version": "-",
-    "date": "2026-07-10",
-    "summary": "2026-07-10 凌晨长程推进 (4 Sprint, 6 commits + 1 history commit), 等今晚 history 推送"
+    "date": "2026-07-12",
+    "summary": "snapshot(2026-07-12): tarball fallback \u6062\u590d working tree (\u6c99\u7bb1 git protocol \u4e0d\u901a)"
   }
   ]
 }
