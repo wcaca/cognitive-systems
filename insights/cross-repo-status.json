@@ -1,23 +1,23 @@
 {
-  "generated_at": "2026-07-12T21:11:25Z",
+  "generated_at": "2026-07-12T21:13:48Z",
   "protocol_version": "v0.8.15",
   "repos": [
   {
     "name": "cognitive-systems",
     "type": "research (public)",
     "path": "/workspace/scout/cognitive-systems",
-    "sha": "bb0db7a",
-    "version": "v0.8.22",
-    "date": "2026-07-11",
-    "summary": "auto(cross-repo): refresh after thoughtspace-notes S2.10 + system-self v25dt++ (2026-07-11)"
+    "sha": "f5437c3",
+    "version": "v0.8.23",
+    "date": "2026-07-12",
+    "summary": "feat(cross-repo): v0.8.23 \u7ef4\u62a4\u8303\u56f4 4\u21925 \u4ed3 (\u65b0\u589e thoughtspace-notes/beauty-crm/system-self)"
   },  {
     "name": "thoughtspace-notes",
     "type": "app (private)",
     "path": "/workspace/scout/thoughtspace-notes",
-    "sha": "2a7917d",
+    "sha": "570d06d",
     "version": "-",
     "date": "2026-07-12",
-    "summary": "snapshot(2026-07-12): tarball fallback \u6062\u590d working tree (\u6c99\u7bb1 git protocol \u4e0d\u901a)"
+    "summary": "docs(s2): S2.11 debug-overlay + S2.12 expected-calculator \u89c4\u5212 (\u6c99\u7bb1\u843d, \u672c\u673a push)"
   },  {
     "name": "beauty-crm",
     "type": "app (public)",
