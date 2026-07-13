@@ -7,7 +7,7 @@
 一个用来沉淀「怎么构建可恢复、可适应、严密的认知系统」研究的公开知识库。
 不是论文集、不是教程，是**还在演进中的思考与设计**——框架、协议、实验、踩过的坑、对未来的猜测，都在这里。
 
-## 当前状态：v0.8.19
+## 当前状态：v0.8.23
 
 - **首个落地方向**：agent harness 体系
 - **首个具体系统**：[`20-systems/agent-harness/`](./20-systems/agent-harness/) —— 关于"运行 agent 的系统"该怎么设计的研究
@@ -41,8 +41,9 @@
 - **v0.8.20 指标可机读化**（W 顿悟）：50-metrics/completeness-metrics.md 从 [draft] 升级为 [active]，补可机读实现 `scripts/completeness-check.sh`（M1-M4 4 指标 + 综合分 0-100 + JSON 输出）。填实 60-tools/ 第二篇契约 `completeness-check.md`。**核心：指标不被自动化 = 指标不存在**
 - **v0.8.21 指标测错对象修正**（X 顿悟）：M3 算法从 commit msg grep 改为 diff-filter=AM on evolution.md — 测的是"协议有没有被履行"不是"作者有没有写关键词"
 - **v0.8.22 指标防集中补作弊**（Y 顿悟）：增 M3b 深度指标（avg + 字符数 / 100）— 5 指标等权，综合分 77.5→82.8 healthy。**核心：X 抓"说不说"，Y 抓"说得有没有"**
-- **总文件数**：约 81 个（v0.8.22 +1）
-- **总 commit 数**：约 50+（v0.8.22 +1）
+- **v0.8.23 thoughtspace-notes S2.11+S2.12 实做闭环**（7-13 凌晨 5 点长程）：debug-overlay (12 测试) + expected-calculator (14 测试) + render-pipeline getStats 集成 + cross-repo status refresh。三方飞轮：thoughtspace-notes 渲染层 → system-self cobweb 诊断端点 → cognitive-systems 沉淀。综合分 82.8→83.4 healthy
+- **总文件数**：约 84 个（v0.8.23 +3: S2.11 plan + S2.12 plan + debug-overlay.js + expected-calculator.js）
+- **总 commit 数**：约 55+（v0.8.23 +4: cross-repo refresh x2 + S2.11+S2.12 plan + README 升级）
 - **公开性**：public，欢迎讨论与共建
 
 ### 跨仓状态
@@ -102,6 +103,7 @@
 | **v0.8.20** | 2026-07-08 | 指标可机读化（顿悟 W）：completeness-check.sh + completeness-metrics.md [active] |
 | **v0.8.21** | 2026-07-09 | 指标测错对象修正（顿悟 X）：M3 算法从 commit msg grep 改为 diff-filter=AM on evolution.md；目标 70%→50%；新增 evolution-sync-protocol.md |
 | **v0.8.22** | 2026-07-10 | 指标防集中补作弊（顿悟 Y）：增 M3b 深度指标（avg + 字符数 / 100）；5 指标等权；综合分 77.5→82.8 healthy |
+| **v0.8.23** | 2026-07-13 | thoughtspace-notes S2.11+S2.12 实做闭环：debug-overlay (12 测试) + expected-calculator (14 测试)。跨仓三方飞轮：1) thoughtspace-notes render-pipeline stats 可视化 + 理论帧耗时基线 → 2) system-self cobweb ✦ AI 诊断 拿 thoughtspace-notes 截图 → 3) cognitive-systems 沉淀 (S 顿悟→T 顿悟经验)。综合分 82.8→83.4 healthy |
 | **v0.9** | 计划 | 多 writer 协调协议（顿悟 R 预测） |
 | **v0.10+** | 待定 | LLM/意识/跨方向交叉 |
 

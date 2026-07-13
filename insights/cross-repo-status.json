@@ -1,23 +1,23 @@
 {
-  "generated_at": "2026-07-12T21:26:53Z",
+  "generated_at": "2026-07-13T21:24:46Z",
   "protocol_version": "v0.8.15",
   "repos": [
   {
     "name": "cognitive-systems",
     "type": "research (public)",
     "path": "/workspace/scout/cognitive-systems",
-    "sha": "39a27d3",
+    "sha": "1960be9",
     "version": "v0.8.23",
     "date": "2026-07-12",
-    "summary": "auto(cross-repo): refresh status 4 commits 2026-07-12 (1b74103 / 570d06d / 98e687f / 0a2512c)"
+    "summary": "auto(cross-repo): refresh 9e2d920 agent-memory history (2026-07-12 \u51cc\u6668 5 \u70b9\u957f\u7a0b)"
   },  {
     "name": "thoughtspace-notes",
     "type": "app (private)",
     "path": "/workspace/scout/thoughtspace-notes",
-    "sha": "570d06d",
+    "sha": "16a3571",
     "version": "-",
-    "date": "2026-07-12",
-    "summary": "docs(s2): S2.11 debug-overlay + S2.12 expected-calculator \u89c4\u5212 (\u6c99\u7bb1\u843d, \u672c\u673a push)"
+    "date": "2026-07-13",
+    "summary": "docs(v2-s2): S2.12 plan doc + topology \u00a76.2 \u6c89\u6dc0 78\u219279"
   },  {
     "name": "beauty-crm",
     "type": "app (public)",
