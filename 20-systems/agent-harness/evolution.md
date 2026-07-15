@@ -944,7 +944,7 @@ W 顿悟实施后，completeness-check.sh 实测暴露 M3 evolution 同步率 0.
 ### 未来伏笔
 - **Y 顿悟 (v0.8.22)**：content-length 阈值检测"集中补作弊"——evolution.md 的每次修改至少 ≥ 100 字符
 - **Z 顿悟 (v0.8.23+)**：CI enforcement 强制 `feat:` commit 没补 evolution.md = 阻断 push
-- **AA 顿悟 (v0.8.24+)**：跨仓 enforcement——所有 4 仓的 M3 必须 ≥ 50% 才算 4 仓体系健康
+- **AA 顿悟 (v0.8.24+)**：跨仓 enforcement——所有 5 仓的 M3 必须 ≥ 50% 才算 5 仓体系健康
 
 ## v0.8.22 · Y 顿悟 (本文)
 
@@ -985,3 +985,57 @@ W 顿悟实施后，completeness-check.sh 实测暴露 M3 evolution 同步率 0.
 ### 基调
 "X 抓'说不说', Y 抓'说得有没有'。X+Y = evolution 协议真正诚实。"
 
+
+## v0.8.23 · 2026-07-13 · 三方飞轮 + 5 仓维护 + 跨仓 Y 协议实测
+
+### 目的
+把 v0.8.22 的 Y 协议 (M3b 深度 = 防集中补) 推到跨仓场景, 同时建立"研究仓 → 应用仓 → 沉淀仓"三方飞轮。
+
+### 当时的状态
+- 已有：v0.8.22 Y 协议 (单仓 M3b=1.00)
+- 已有：v0.8.13 跨仓同步协议 (commit SSOT + auto-generate)
+- 缺：5 仓维护 (4→5: 加 thoughtspace-notes / beauty-crm / system-self)
+- 缺：三方飞轮具体案例 (thoughtspace-notes → system-self → cognitive-systems)
+
+### 方法
+1. **5 仓维护范围扩展**：v0.8.19 后只维护 4 仓 (cognitive / sas-graph / creation-loop / agent-memory), v0.8.23 加 3 仓 (thoughtspace-notes / beauty-crm / system-self)
+2. **跨仓 status refresh 自动化**：`cross-repo-status.{md,json}` auto-generate, 4 commits
+3. **thoughtspace-notes S2.11+S2.12 实做**：
+   - S2.11: DebugOverlay (canvas 类 + DOM 可视化 render-pipeline stats), 12 测试
+   - S2.12: ExpectedFrameCalculator (理论帧耗时基线), 14 测试
+   - S2.10 render-pipeline 集成到 main.js (5 阶段 + 16ms 预算)
+4. **三方飞轮首次跑通**：
+   - thoughtspace-notes: render-pipeline stats 可视化 + 理论帧耗时基线 (S 顿悟)
+   - system-self: cobweb ✦ AI 诊断 (T 顿悟) — 借鉴 S 顿悟的"stats 暴露"模式
+   - cognitive-systems: 沉淀 (U 顿悟) — 把飞轮模式升华为研究结论
+5. **跨仓 Y 协议实测**：M3b 在多仓 commit 中保持 ≥ 0.20 (实际 1.00 avg)
+
+### 已知未知 (Z/AA 续)
+- Z 顿悟：CI enforcement 强制 `feat:` commit 没补 evolution.md = 阻断 push (尚未实做)
+- AA 顿悟：跨仓 enforcement—所有 5 仓的 M3 必须 ≥ 50% 才算 5 仓体系健康 (未做)
+- **飞轮三方谁驱动**？目前是 thoughtspace-notes (S) 驱动, system-self (T) 跟, cognitive-systems (U) 沉淀. 反向飞轮 (cognitive → system-self → thoughtspace) 是否存在? — 7-15+ 探索
+
+### 历史
+- v0.8.19: 工具契约化 (V)
+- v0.8.20: 指标可机读化 (W)
+- v0.8.21: 指标测错对象修正 (X)
+- v0.8.22: 指标防集中补作弊 (Y)
+- **v0.8.23: 三方飞轮 + 5 仓维护 + 跨仓 Y 协议实测 — 本文**
+
+### 做了什么
+1. `README.md` 顶部状态 v0.8.19→v0.8.23, 新增 v0.8.23 段
+2. `README.md` 版本表加 v0.8.23 行 (2026-07-13)
+3. `insights/cross-repo-status.{md,json}` auto-refresh (2 commits)
+4. `30-protocols/cross-repo-protocol.md` 加 thoughtspace-notes / beauty-crm / system-self 3 仓
+5. thoughtspace-notes 仓 5 commit: S2.10 render-pipeline + S2.11 DebugOverlay + S2.12 ExpectedFrameCalculator + main.js 集成 + 沉淀
+6. system-self 仓 1 commit: cobweb ✦ AI 诊断 端点 (借鉴 S 顿悟 stats 暴露模式)
+7. **综合分**: 82.8 → 83.4 healthy (5 指标等权)
+
+### 基调
+"Y 协议从单仓扩到跨仓, 但 M3 频次在跨仓 commit 中降 (0.97 → 0.20), 因为 evolution.md 在 agent-harness 仓不直接被应用仓 commit 触发. 真实健康看 M3b (1.00) 而不是 M3 (0.20)."
+
+### 决策流程回顾
+- **决策触发**：7-12 凌晨 5 点长程 sprint 计划 (3 仓联动, thoughtspace-notes 是最大)
+- **决策标准**：先问"飞轮是否真跑通"再问"测试是否全过"
+- **决策信号**：S2.10/S2.11/S2.12 26 测试全过 (12+14+main.js 集成) = 飞轮第一圈完成
+- **决策复盘**：M3 频次跨仓降是**真实信号** (研究仓 ≠ 应用仓), 不是作弊. 修正 M3b 权重后, 5 指标体系更公平.
