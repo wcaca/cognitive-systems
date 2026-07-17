@@ -1,0 +1,44 @@
+# Z 协议 enforcement · cognitive-systems v0.8.23+ (Z 顿悟)
+#
+# 起源: 30-protocols/evolution-sync-protocol.md (X 顿悟 v0.8.21)
+#       30-protocols/evolution-depth-protocol.md (Y 顿悟 v0.8.22)
+#       30-protocols/evolution-enforcement-protocol.md (Z 顿悟 v0.8.23+)
+#
+# 功能: 每次 push / PR 自动跑 scripts/z-enforce.sh
+#       检最近 N=10 commit 中 feat(XX) / fix(20-systems|80-meta) 是否补 evolution
+#       没补 = exit 1, 阻断 push
+#
+# 触发: push to main, PR to main, 每 6 小时 cron (跟 cross-repo-status 同步), manual
+#
+# 配套: scripts/z-enforce.sh
+
+name: z-enforce
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # 每 6h 跟 cross-repo-status 同步跑一次
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  z-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 30  # 拉最近 30 commit, 脚本只查 10
+
+      - name: Z 协议 enforcement
+        env:
+          # push 模式只看 1 commit (CI push trigger, 避免历史 commit 拉低)
+          # cron 模式看 10 commit (累积性 enforcement, 跑 6h schedule)
+          Z_N_COMMITS: ${{ github.event_name == 'schedule' && '10' || '1' }}
+        run: |
+          echo "=== Z 协议 enforcement CI (v0.8.23+) ==="
+          echo "Z_N_COMMITS=$Z_N_COMMITS (event: ${{ github.event_name }})"
+          bash scripts/z-enforce.sh

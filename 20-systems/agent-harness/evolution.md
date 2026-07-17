@@ -1039,3 +1039,63 @@ W 顿悟实施后，completeness-check.sh 实测暴露 M3 evolution 同步率 0.
 - **决策标准**：先问"飞轮是否真跑通"再问"测试是否全过"
 - **决策信号**：S2.10/S2.11/S2.12 26 测试全过 (12+14+main.js 集成) = 飞轮第一圈完成
 - **决策复盘**：M3 频次跨仓降是**真实信号** (研究仓 ≠ 应用仓), 不是作弊. 修正 M3b 权重后, 5 指标体系更公平.
+
+## v0.8.24 · 2026-07-17 · Z 顿悟 CI enforcement 实做 (本 commit)
+
+### 触发 (Trigger)
+X (频次) + Y (深度) 协议解决作弊, 但缺 enforcement — 7-12 agent-memory history 写 "Z 协议: feat: commit 没补 evolution.md 阻断 push, 未做", 7-16 backlog 同步保留. 7-17 凌晨 5 点 Sprint D 闭环.
+
+### 当时的状态 (State)
+- 已有: M3 (频次) + M3b (深度) 测得准, evolution-sync-protocol.md §2 表格清楚列出"哪种 commit 必须补"
+- 缺: 自动 enforcement — 元方法论被表演, commit 写"insight" 但 evolution.md 实际没动
+
+### 方法 (Methodology)
+- 写 scripts/z-enforce.sh: 检最近 N 个 commit, 筛 `feat(20-systems|80-meta|10-frameworks|30-protocols)` + `fix(20-systems|80-meta)`, 验 commit 改了 evolution 文件或 diff 含 `## v0.X.Y` 段
+- 写 .github/workflows/z-enforce.yml: push / PR / 6h cron 触发, push 看 1 commit (避免历史拉低) + cron 看 10 commit (累积 enforcement)
+- Z 协议 = "实做" 强制 X+Y 协议履行
+
+### 前提 (Assumptions)
+- 假设 N=1 (push) + N=10 (cron) 双模式足够: push 阻断新增, cron 暴露历史
+- 假设 grep "## v0.[0-9]+.[0-9]+" 够用 (单一格式)
+- 假设 evolution-sync-protocol.md §2 表格对 commit scope 分类完整
+
+### 已知未知 (Known-Unknowns)
+- 不知道 commit rebase 后 SHA 改了, Z 协议怎么追溯 — 留 v0.8.25+
+- 不知道 4 仓 cross-repo 触发 Z 协议时, 仓内 z-enforce.sh 跟仓内 evolution 怎么对齐 — 留 v0.8.26+
+
+### 历史 (Lineage)
+X (v0.8.21) → Y (v0.8.22) → Z (v0.8.24). 配套 M3 → M3b → M3+M3b enforcement. 顿悟链: P (auto-generate) → Q (跨仓同步) → R (元方法论) → S (空目录信号) → T (填实顺序) → U → V → W (4 仓飞轮) → X (测错对象) → Y (频次+深度) → Z (CI enforcement).
+
+### 基调 (Tone)
+执行型. 7-15 history 写 "Z 协议: CI enforcement 强制 `feat:` commit 没补 evolution.md 阻断 push, **未做**" — 现在补上. 不再是协议草案, 是可执行 CI.
+
+### 做了什么 (What was done)
+- scripts/z-enforce.sh (148 行): bash 脚本, grep + git show 检 evolution 改动
+- .github/workflows/z-enforce.yml (44 行): push/PR/cron 触发, N_COMMITS 走 env var
+- 验证: Z_N_COMMITS=1 / =10 跑两次, push 模式 pass (历史 commit 不属 20-systems scope), cron 模式暴露 0 (最近 10 commit 都被 30-protocols 表格豁免)
+- evolution.md 段: 本段 (5 维度 + 历史 + tone + lineage, 跟 v0.8.22 模板对齐)
+
+### 决策流程回顾（v0.4 新增视角）
+- **决策触发**: backlog "Z 顿悟 CI enforcement, 未做"
+- **决策标准**: X+Y 协议不 enforcement = 表演; push 阻断 = 真强制
+- **决策信号**: agent-memory history 多次提到 "未做" (7-12, 7-15, 7-16)
+- **决策复盘**: 选 bash + grep 方案, 不选 GitHub Action JS 依赖, 保持 cognitive-systems 仓 0 依赖 (连 node_modules 都没有)
+- **决策盲点**: commit rebase + cross-repo Z 协议 留 v0.8.25/26
+
+### 跑测 (How verified)
+- 沙箱 `Z_N_COMMITS=10 bash scripts/z-enforce.sh` 返 0 error (最近 10 commit 没 feat(20-systems|80-meta|10-frameworks|30-protocols) 或 fix(20-systems|80-meta))
+- 沙箱 `Z_N_COMMITS=1` 同样 pass
+- workflow 文件 .github/workflows/z-enforce.yml 跟 cross-repo-status-check.yml 格式对齐 (push + schedule + workflow_dispatch)
+
+### 与同仓 M3b 协同
+- M3b 测"深度" (avg + 字符/commit) — Y 协议
+- Z 测"enforcement" (commit 改了 evolution.md) — Z 协议
+- 共同: feat(20-systems) commit 必须 evolution.md 加 v0.X.Y 段 + 加 ≥100 字符
+- 差异: M3b 看历史, Z 看新 commit; M3b 是指标, Z 是 CI 阻断
+
+### 同认知关联
+- v0.8.23 (三方飞轮 + 5 仓维护) 提到 "AA 顿悟 v0.8.24+ 伏笔: 4 仓改 5 仓" — 7-17 sprint 4 仓 (beauty-crm/system-self/thoughtspace-notes/agent-memory) + cognitive-systems 1 仓维护 5 仓的 cross-repo Y 协议 实测成立
+- v0.8.25+ 候选: cross-repo Z 协议 (4 仓的 feat commit 也触发 cognitive-systems 仓的 evolution.md 沉淀?)
+
+### 沉淀人
+Mavis · 凌晨 5 点长程推进 (2026-07-17)
