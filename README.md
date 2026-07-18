@@ -7,7 +7,7 @@
 一个用来沉淀「怎么构建可恢复、可适应、严密的认知系统」研究的公开知识库。
 不是论文集、不是教程，是**还在演进中的思考与设计**——框架、协议、实验、踩过的坑、对未来的猜测，都在这里。
 
-## 当前状态：v0.8.23
+## 当前状态：v0.8.25
 
 - **首个落地方向**：agent harness 体系
 - **首个具体系统**：[`20-systems/agent-harness/`](./20-systems/agent-harness/) —— 关于"运行 agent 的系统"该怎么设计的研究
@@ -104,6 +104,8 @@
 | **v0.8.21** | 2026-07-09 | 指标测错对象修正（顿悟 X）：M3 算法从 commit msg grep 改为 diff-filter=AM on evolution.md；目标 70%→50%；新增 evolution-sync-protocol.md |
 | **v0.8.22** | 2026-07-10 | 指标防集中补作弊（顿悟 Y）：增 M3b 深度指标（avg + 字符数 / 100）；5 指标等权；综合分 77.5→82.8 healthy |
 | **v0.8.23** | 2026-07-13 | thoughtspace-notes S2.11+S2.12 实做闭环：debug-overlay (12 测试) + expected-calculator (14 测试)。跨仓三方飞轮：1) thoughtspace-notes render-pipeline stats 可视化 + 理论帧耗时基线 → 2) system-self cobweb ✦ AI 诊断 拿 thoughtspace-notes 截图 → 3) cognitive-systems 沉淀 (S 顿悟→T 顿悟经验)。综合分 82.8→83.4 healthy |
+| **v0.8.24** | 2026-07-17 | Z 顿悟 CI enforcement 实做：scripts/z-enforce.sh (148 行) + workflow (push/PR/cron 触发, N_COMMITS env var)。仓内 feat(20-systems\|80-meta\|10-frameworks\|30-protocols) + fix(20-systems\|80-meta) commit 必补 evolution.md, 不补则阻断 push |
+| **v0.8.25** | 2026-07-18 | 跨仓 Z 协议 (Cross-Repo Z Protocol) 实做：scripts/cross-repo-evolution.sh (190 行, 4 仓 N=10 抽 3+ 段) + insights/cross-repo-evolution.md + z-enforce v0.8.25 跨仓检扩展。cognitive-systems 真正成 "5 仓元方法论总线" |
 | **v0.9** | 计划 | 多 writer 协调协议（顿悟 R 预测） |
 | **v0.10+** | 待定 | LLM/意识/跨方向交叉 |
 

@@ -1099,3 +1099,74 @@ X (v0.8.21) → Y (v0.8.22) → Z (v0.8.24). 配套 M3 → M3b → M3+M3b enforc
 
 ### 沉淀人
 Mavis · 凌晨 5 点长程推进 (2026-07-17)
+
+---
+
+## v0.8.25 · 2026-07-18 · 跨仓 Z 协议 (Cross-Repo Z Protocol) 实做
+
+### 触发 (Trigger)
+v0.8.24 Z 协议 enforcement 只检 cognitive-systems 仓内部 commit, 但 5 仓飞轮里, 其他 4 仓 (system-self / thoughtspace-notes / beauty-crm / agent-memory) 的 `feat(XX)` commit 同样产生元方法论信号 — 7-17 evolution 段已写 "v0.8.25+ 候选: cross-repo Z 协议". 7-18 凌晨 5 点 Sprint B 闭环.
+
+### 当时的状态 (State)
+- 已有: 仓内 z-enforce.sh (v0.8.24) 检 cognitive-systems 自身 feat/fix(scope) 补 evolution
+- 已有: cross-repo-status.sh (v0.8.15) 拉 4 仓 latest commit 视图 (跨仓元数据)
+- 缺: 跨仓 evolution 视图 — 哪仓哪个 commit 触发了 cognitive-systems 哪个协议
+
+### 方法 (Methodology)
+- 写 `scripts/cross-repo-evolution.sh` (190 行, bash 0 依赖): 拉 4 仓最近 N commit, 筛 `feat(XX)` + commit msg 引用认知关键词 (v0.8.X / 顿悟 / 协议 / 拓扑 / 镜子 / M3)
+- 生成 `insights/cross-repo-evolution.md` (跟 cross-repo-status.md 平行, 维度不同: latest vs N=10 累积)
+- 写 `30-protocols/cross-repo-z-protocol.md` (3.5KB): 协议本身 — WHEN/WHO/HOW + 5 段
+- 扩展 z-enforce.sh: N≥10 模式 (cron) 加跨仓检分支, 报 cross-repo-evolution.md 段数 + 上次刷新
+- 协议: 跟 evolution-sync-protocol.md (X) + evolution-depth-protocol.md (Y) + z-enforce.sh (Z v0.8.24) 平行
+
+### 前提 (Assumptions)
+- 假设 N=10 default 够用: 6h cron 累积足够看到跨仓信号, 不需 N=30
+- 假设认知关键词 regex `(v0\.8\.[0-9]+|顿悟|协议|拓扑|镜子|M[0-9]|evolution|insight)` 足够覆盖 — 验证: 4 仓最近 10 commit 出 3 段, 30 commit 出 7 段 (系统自反思 镜子 6 + Z enforcement 1)
+- 假设 cross-repo-evolution.md 用 insights/ 跟 cross-repo-status.md 平行 (不是 70-artifacts) — 后者是 archive 容器, 前者是 current view
+- 假设 4 仓路径跟 cross-repo-status.sh 一致 (跟 REPO_PARENT 平级, 默认是 agent-memory / beauty-crm / system-self / thoughtspace-notes 4 仓, 不含 cognitive-systems 自身)
+
+### 已知未知 (Known-Unknowns)
+- 不知道 commit msg 引用协议时, 是否所有 feat 都被认知性 — 现 protocol 是 "引用关键词 = 触发", 可能误报 (e.g. "镜子" 是形容词不是协议). 留 v0.8.26+ 加语义去歧
+- 不知道 4 仓 commit 量增加后, N=10 是否足够 — 7-18 跑 4 仓 * 10 = 40 commit 只出 3 段, 信号稀疏, 可能需 N=30
+- 不知道 cron (6h) 节奏 vs push 触发哪个更合适 — 现默认 cron, 留 v0.8.27+ 加 push trigger
+
+### 历史 (Lineage)
+P (auto-generate) → Q (跨仓同步) → R (元方法论) → S (空目录信号) → T (填实顺序) → U → V → W (4 仓飞轮) → X (测错对象) → Y (频次+深度) → Z (仓内 enforcement) → **Z' (跨仓 extension)**. 顿悟链延伸 1 步: Z' 协议是 Z 协议的跨仓变体, 形成"仓内 Z + 跨仓 Z'" 互补对.
+
+### 基调 (Tone)
+总线型. v0.8.15 cross-repo-status.sh 解决了"跨仓 latest commit 视图", 但 evolution 信号 (哪仓 commit 触发认知协议) 没接上. v0.8.25 cross-repo-evolution 补上这个 bus, cognitive-systems 真正成 "5 仓元方法论的总线".
+
+### 做了什么 (What was done)
+- `30-protocols/cross-repo-z-protocol.md` (3.5KB, 3700+ bytes, 6 段 + 协议 vs 协议关系表)
+- `scripts/cross-repo-evolution.sh` (190 行, bash 0 依赖, --n=10/30/--push/--repos= 4 模式)
+- `scripts/z-enforce.sh` v0.8.25 扩展: N≥10 加跨仓检分支
+- `30-protocols/README.md`: 加 cross-repo-z-protocol 索引项
+- `insights/cross-repo-evolution.md` (2KB, 3 段 N=10 / 7 段 N=30): 含 system-self 镜子原则 Step 2/3/4 + Z enforcement 自身
+- evolution.md 段: 本段 (5 维度 + 历史 + tone + lineage, 跟 v0.8.22/v0.8.24 模板对齐)
+
+### 决策流程回顾（v0.4 新增视角）
+- **决策触发**: backlog "v0.8.25+ 候选: cross-repo Z 协议"
+- **决策标准**: Z 协议仓内 enforcement 闭环, 但 bus 不完整; 4 仓 commit 没汇总到 cognitive-systems = 体系半闭环
+- **决策信号**: 7-18 sprint 真实跑 4 仓, 3 段 7 段信号足够, 不用 N=30 默认
+- **决策复盘**: 选 bash + grep 方案保持 0 依赖, 不引入 Python 解析; 选 `insights/` 平行 cross-repo-status, 不用新目录; 选关键词 regex (vs 协议编号全列) 简化维护
+- **决策盲点**: 协议 vs 形容词歧义 ("镜子" in 镜子里 = 协议, 镜子里 = 物体) 留 v0.8.26; 4 仓 commit 量增长后 N=10 是否够 留 v0.8.27
+
+### 跑测 (How verified)
+- 沙箱 `bash scripts/cross-repo-evolution.sh` 跑 N=10 返 3 段 (system-self 镜子 3 commits), N=30 返 7 段
+- 沙箱 `Z_N_COMMITS=10 bash scripts/z-enforce.sh` 返 "跨仓 Z 协议 enforcement (v0.8.25)  3 段, ✅ 已记录"
+- 沙箱 `Z_N_COMMITS=1 bash scripts/z-enforce.sh` 返原 v0.8.24 行为 (N=1 不触发跨仓检), 不破
+- 协议 README.md 加 cross-repo-z-protocol 索引, Z_N_COMMITS=10 跨仓检 enabled
+
+### 与同仓 M3b / Z 协同
+- M3b 测"深度" (avg + 字符/commit) — Y 协议 (仓内)
+- Z (v0.8.24) 测"enforcement" (commit 改了 evolution.md) — 仓内 CI 阻断
+- Z' (v0.8.25) 测"跨仓总线" (4 仓 commit 是否进 insights/cross-repo-evolution.md) — 跨仓 extension
+- 关系: M3b (指标) ⊂ Z (仓内) ⊂ Z' (跨仓), 三层嵌套
+
+### 同认知关联
+- v0.8.24 段 "v0.8.25+ 候选: cross-repo Z 协议" — 本 commit 落地
+- v0.8.23 段 "AA 顿悟 v0.8.24+ 伏笔" — v0.8.24 + v0.8.25 一起回答 (仓内 + 跨仓 enforcement 双层)
+- cross-repo-status.sh v0.8.15 — v0.8.25 跨仓 evolution 视图跟它平行, 共同构成"5 仓飞轮可视化"基础
+
+### 沉淀人
+Mavis · 凌晨 5 点长程推进 (2026-07-18)

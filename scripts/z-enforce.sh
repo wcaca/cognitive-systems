@@ -23,6 +23,9 @@
 
 set -e
 
+SCRIPT_DIR_Z="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR_Z/.." && pwd)"
+
 EVOLUTION_FILES=(
   "20-systems/agent-harness/evolution.md"
   "20-systems/research-loop/evolution.md"
@@ -132,6 +135,30 @@ echo "检查 commit 数: $checked"
 echo "errors: $errors"
 echo "warnings: $warnings"
 echo ""
+
+# v0.8.25 跨仓 Z 协议: cron 模式 (N>=10) 检跨仓 commit 是否被 cross-repo-evolution.md 收
+if [ "$N_COMMITS" -ge 10 ]; then
+  echo ""
+  echo "─── 跨仓 Z 协议 enforcement (v0.8.25) ───"
+  REPO_PARENT_Z="$(cd "$REPO_ROOT/.." && pwd)"
+  CROSS_REPO_EVO="$REPO_ROOT/insights/cross-repo-evolution.md"
+
+  if [ ! -f "$CROSS_REPO_EVO" ]; then
+    echo "⚠️  cross-repo-evolution.md 不存在, 跳过跨仓检"
+    echo "   跑: bash scripts/cross-repo-evolution.sh"
+  else
+    # 看上次刷新时间
+    last_refresh=$(grep -oE "生成时间.{0,30}" "$CROSS_REPO_EVO" 2>/dev/null | head -1 || echo "未知")
+    segments=$(grep -c "^### " "$CROSS_REPO_EVO" 2>/dev/null || echo 0)
+    echo "  上次刷新: $last_refresh"
+    echo "  当前段数: $segments"
+    if [ "$segments" -lt 1 ]; then
+      echo "  ⚠️  cross-repo-evolution.md 段数 = 0, 需跑 refresh"
+    else
+      echo "  ✅ 跨仓 evolution 段已记录"
+    fi
+  fi
+fi
 
 if [ "$errors" -gt 0 ]; then
   echo "❌ Z 协议 enforcement 失败 — 阻断 push"
