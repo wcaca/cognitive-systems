@@ -7,7 +7,7 @@
 一个用来沉淀「怎么构建可恢复、可适应、严密的认知系统」研究的公开知识库。
 不是论文集、不是教程，是**还在演进中的思考与设计**——框架、协议、实验、踩过的坑、对未来的猜测，都在这里。
 
-## 当前状态：v0.8.25
+## 当前状态：v0.8.26
 
 - **首个落地方向**：agent harness 体系
 - **首个具体系统**：[`20-systems/agent-harness/`](./20-systems/agent-harness/) —— 关于"运行 agent 的系统"该怎么设计的研究
@@ -42,8 +42,11 @@
 - **v0.8.21 指标测错对象修正**（X 顿悟）：M3 算法从 commit msg grep 改为 diff-filter=AM on evolution.md — 测的是"协议有没有被履行"不是"作者有没有写关键词"
 - **v0.8.22 指标防集中补作弊**（Y 顿悟）：增 M3b 深度指标（avg + 字符数 / 100）— 5 指标等权，综合分 77.5→82.8 healthy。**核心：X 抓"说不说"，Y 抓"说得有没有"**
 - **v0.8.23 thoughtspace-notes S2.11+S2.12 实做闭环**（7-13 凌晨 5 点长程）：debug-overlay (12 测试) + expected-calculator (14 测试) + render-pipeline getStats 集成 + cross-repo status refresh。三方飞轮：thoughtspace-notes 渲染层 → system-self cobweb 诊断端点 → cognitive-systems 沉淀。综合分 82.8→83.4 healthy
-- **总文件数**：约 84 个（v0.8.23 +3: S2.11 plan + S2.12 plan + debug-overlay.js + expected-calculator.js）
-- **总 commit 数**：约 55+（v0.8.23 +4: cross-repo refresh x2 + S2.11+S2.12 plan + README 升级）
+- **v0.8.24 Z 顿悟 CI enforcement 实做**（7-17）：scripts/z-enforce.sh (148 行) + .github/workflows/z-enforce.yml (44 行)。仓内 feat(20-systems|80-meta|10-frameworks|30-protocols) + fix(20-systems|80-meta) commit 必补 evolution.md, 不补则阻断 push
+- **v0.8.25 跨仓 Z 协议 (Cross-Repo Z Protocol) 实做**（7-18）：scripts/cross-repo-evolution.sh (190 行) + 30-protocols/cross-repo-z-protocol.md (3.7KB) + insights/cross-repo-evolution.md。cognitive-systems 真正成 "5 仓元方法论总线"
+- **v0.8.26 协议 vs 形容词去歧 (AA 顿悟)**（7-24）：scripts/protocol-disambiguation.sh (270 行, 12/12 测试 pass) + 30-protocols/protocol-disambiguation.md (5.7KB) + cross-repo-evolution 升级走 AA 判定 + z-enforce 加 AA 检分支。误报 100% → 0%
+- **总文件数**：约 89 个（v0.8.24-26 +5: z-enforce.sh + z-enforce.yml + cross-repo-z-protocol.md + protocol-disambiguation.md + protocol-disambiguation.sh）
+- **总 commit 数**：约 60+（v0.8.24-26 +6: z-enforce 实做 + cross-repo-z-protocol 实做 + protocol-disambiguation 实做 + 4 README/索引升级）
 - **公开性**：public，欢迎讨论与共建
 
 ### 跨仓状态
@@ -106,6 +109,7 @@
 | **v0.8.23** | 2026-07-13 | thoughtspace-notes S2.11+S2.12 实做闭环：debug-overlay (12 测试) + expected-calculator (14 测试)。跨仓三方飞轮：1) thoughtspace-notes render-pipeline stats 可视化 + 理论帧耗时基线 → 2) system-self cobweb ✦ AI 诊断 拿 thoughtspace-notes 截图 → 3) cognitive-systems 沉淀 (S 顿悟→T 顿悟经验)。综合分 82.8→83.4 healthy |
 | **v0.8.24** | 2026-07-17 | Z 顿悟 CI enforcement 实做：scripts/z-enforce.sh (148 行) + workflow (push/PR/cron 触发, N_COMMITS env var)。仓内 feat(20-systems\|80-meta\|10-frameworks\|30-protocols) + fix(20-systems\|80-meta) commit 必补 evolution.md, 不补则阻断 push |
 | **v0.8.25** | 2026-07-18 | 跨仓 Z 协议 (Cross-Repo Z Protocol) 实做：scripts/cross-repo-evolution.sh (190 行, 4 仓 N=10 抽 3+ 段) + insights/cross-repo-evolution.md + z-enforce v0.8.25 跨仓检扩展。cognitive-systems 真正成 "5 仓元方法论总线" |
+| **v0.8.26** | 2026-07-24 | 协议 vs 形容词去歧 (AA 顿悟)：protocol-disambiguation.sh (12/12 测试 pass, 双白名单 + 距离阈值) + cross-repo-evolution 升级走 AA 判定 + z-enforce 加 AA 检分支。误报 100% → 0%, system-self 镜子原则 4 commits 全识别为真协议 |
 | **v0.9** | 计划 | 多 writer 协调协议（顿悟 R 预测） |
 | **v0.10+** | 待定 | LLM/意识/跨方向交叉 |
 

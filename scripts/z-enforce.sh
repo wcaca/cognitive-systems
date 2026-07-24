@@ -139,7 +139,7 @@ echo ""
 # v0.8.25 跨仓 Z 协议: cron 模式 (N>=10) 检跨仓 commit 是否被 cross-repo-evolution.md 收
 if [ "$N_COMMITS" -ge 10 ]; then
   echo ""
-  echo "─── 跨仓 Z 协议 enforcement (v0.8.25) ───"
+  echo "─── 跨仓 Z 协议 enforcement (v0.8.25 + AA v0.8.26 语义层) ───"
   REPO_PARENT_Z="$(cd "$REPO_ROOT/.." && pwd)"
   CROSS_REPO_EVO="$REPO_ROOT/insights/cross-repo-evolution.md"
 
@@ -152,10 +152,16 @@ if [ "$N_COMMITS" -ge 10 ]; then
     segments=$(grep -c "^### " "$CROSS_REPO_EVO" 2>/dev/null || echo 0)
     echo "  上次刷新: $last_refresh"
     echo "  当前段数: $segments"
+    # v0.8.26: 检协议名 vs 形容词 去歧 (AA 顿悟) — 走 protocol-disambiguation.sh
+    if [ "$segments" -ge 1 ]; then
+      real_protocols=$(grep -cE "v0\.8\.26 去歧" "$CROSS_REPO_EVO" 2>/dev/null || echo 0)
+      adjective_misuse=$(grep -cE "形容词用法" "$CROSS_REPO_EVO" 2>/dev/null || echo 0)
+      echo "  AA 协议去歧后: $real_protocols 真协议, $adjective_misuse 形容词识别"
+    fi
     if [ "$segments" -lt 1 ]; then
       echo "  ⚠️  cross-repo-evolution.md 段数 = 0, 需跑 refresh"
     else
-      echo "  ✅ 跨仓 evolution 段已记录"
+      echo "  ✅ 跨仓 evolution 段已记录 (AA 去歧)"
     fi
   fi
 fi

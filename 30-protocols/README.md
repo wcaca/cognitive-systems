@@ -9,3 +9,4 @@
 - [`evolution-sync-protocol.md`](./evolution-sync-protocol.md) — v0.8.21 起 · 元方法论同步协议 = 强制 commit 后补 evolution.md (X 顿悟产物)
 - [`evolution-depth-protocol.md`](./evolution-depth-protocol.md) — v0.8.22 起 · evolution 深度协议 = 测每次补的字符数, 防"集中补" (Y 顿悟产物)
 - [`cross-repo-z-protocol.md`](./cross-repo-z-protocol.md) — v0.8.25 起 · 跨仓 Z 协议 = 4 仓 feat commit 触发 cognitive-systems evolution 沉淀 (Z 顿悟跨仓扩展)
+- [`protocol-disambiguation.md`](./protocol-disambiguation.md) — v0.8.26 起 · 协议 vs 形容词去歧 = 协议名 + 协议标记词 距离 ≤ 8 字符 = 真协议引用 (AA 顿悟)

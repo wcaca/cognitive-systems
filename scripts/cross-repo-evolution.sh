@@ -127,13 +127,18 @@ for repo_path in "${REPOS[@]}"; do
     scope=$(echo "$subject" | sed -E 's/^(feat|fix)\(([^)]*)\).*/\2/')
     type=$(echo "$subject" | grep -oE "^(feat|fix)")
     date_short=$(echo "$date" | cut -c1-10)
+    # v0.8.26: 协议名 vs 形容词去歧 (AA 顿悟) — 用 protocol-disambiguation.sh 判定
+    triggered=$(bash "$SCRIPT_DIR/protocol-disambiguation.sh" classify "$subject $body" 2>/dev/null || echo "")
+    if [ -z "$triggered" ]; then
+      triggered="(无, 形容词用法)"
+    fi
     segment="### $date_short · $repo_name $type($scope)
 
 | 项 | 值 |
 |---|---|
 | 源仓 | $repo_name |
 | commit | \`$sha\` |
-| 触发协议 | $(echo "$subject $body" | grep -oE "v0\.[0-9]+\.[0-9]+|X 顿悟|Y 顿悟|Z 顿悟|U 协议|拓扑|镜子|M[0-9]" | head -3 | tr '\n' ',' | sed 's/,$//' || echo '元方法论') |
+| 触发协议 (v0.8.26 去歧) | $triggered |
 | body 关键词 | $body_keywords |
 | 描述 | $(echo "$subject" | head -c 120) |
 
@@ -151,7 +156,7 @@ cat > "$OUTPUT" << EOF
 > **自动生成**: 运行 \`bash scripts/cross-repo-evolution.sh\` 重新生成
 > **不要手改**: 改各仓的 commit, 重跑脚本
 > **生成时间**: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
-> **协议版本**: v0.8.25 (Cross-Repo Z Protocol)
+> **协议版本**: v0.8.26 (Cross-Repo Z Protocol + Protocol Disambiguation)
 > **源仓数**: ${#REPOS[@]} (system-self / thoughtspace-notes / beauty-crm / agent-memory)
 > **每个仓 commit 数**: $N_COMMITS
 > **总段数**: $total_segments
@@ -182,10 +187,28 @@ cat >> "$OUTPUT" << 'EOF'
 |---|---|---|
 EOF
 
-# 协议分布统计
-echo "$all_segments_md" | grep -oE "(v0\.[0-9]+\.[0-9]+|X 顿悟|Y 顿悟|Z 顿悟|U 协议|拓扑|镜子|M[0-9])" | sort | uniq -c | sort -rn | head -20 | while read -r count proto; do
-  echo "| $proto | $count | (累计) |" >> "$OUTPUT"
+# v0.8.26: 协议分布统计走 protocol-disambiguation 判定 (不再用 regex 误报)
+# 统计所有真协议引用, 不计形容词用法
+all_true_refs=""
+for repo_path in "${REPOS[@]}"; do
+  if [ ! -d "$repo_path/.git" ]; then continue; fi
+  while IFS=$'\t' read -r sha subject; do
+    [ -z "$sha" ] && continue
+    body=$(git -C "$repo_path" show -s --format="%b" "$sha" 2>/dev/null | head -10)
+    refs=$(bash "$SCRIPT_DIR/protocol-disambiguation.sh" classify "$subject $body" 2>/dev/null || echo "")
+    if [ -n "$refs" ]; then
+      all_true_refs+="$refs, "
+    fi
+  done < <(git -C "$repo_path" log --no-merges --format="%H%x09%s" -n "$N_COMMITS" 2>/dev/null)
 done
+# 统计各协议出现次数
+if [ -n "$all_true_refs" ]; then
+  echo "$all_true_refs" | tr ',' '\n' | sed 's/^ *//;s/ *$//' | grep -v '^$' | sort | uniq -c | sort -rn | head -20 | while read -r count proto; do
+    echo "| $proto | $count | (4 仓累计, v0.8.26 去歧) |" >> "$OUTPUT"
+  done
+else
+  echo "| (无) | 0 | - |" >> "$OUTPUT"
+fi
 
 cat >> "$OUTPUT" << 'EOF'
 
@@ -203,7 +226,7 @@ cat >> "$OUTPUT" << 'EOF'
 
 ---
 
-沉淀人: Mavis · 凌晨 5 点长程推进 (2026-07-18) · 跨仓 Z 协议 v0.8.25
+沉淀人: Mavis · 凌晨 5 点长程推进 (2026-07-24) · 跨仓 Z 协议 v0.8.26 (AA 顿悟: 协议 vs 形容词去歧)
 EOF
 
 echo ""
