@@ -7,7 +7,7 @@
 一个用来沉淀「怎么构建可恢复、可适应、严密的认知系统」研究的公开知识库。
 不是论文集、不是教程，是**还在演进中的思考与设计**——框架、协议、实验、踩过的坑、对未来的猜测，都在这里。
 
-## 当前状态：v0.8.26
+## 当前状态：v0.8.27
 
 - **首个落地方向**：agent harness 体系
 - **首个具体系统**：[`20-systems/agent-harness/`](./20-systems/agent-harness/) —— 关于"运行 agent 的系统"该怎么设计的研究
@@ -45,8 +45,9 @@
 - **v0.8.24 Z 顿悟 CI enforcement 实做**（7-17）：scripts/z-enforce.sh (148 行) + .github/workflows/z-enforce.yml (44 行)。仓内 feat(20-systems|80-meta|10-frameworks|30-protocols) + fix(20-systems|80-meta) commit 必补 evolution.md, 不补则阻断 push
 - **v0.8.25 跨仓 Z 协议 (Cross-Repo Z Protocol) 实做**（7-18）：scripts/cross-repo-evolution.sh (190 行) + 30-protocols/cross-repo-z-protocol.md (3.7KB) + insights/cross-repo-evolution.md。cognitive-systems 真正成 "5 仓元方法论总线"
 - **v0.8.26 协议 vs 形容词去歧 (AA 顿悟)**（7-24）：scripts/protocol-disambiguation.sh (270 行, 12/12 测试 pass) + 30-protocols/protocol-disambiguation.md (5.7KB) + cross-repo-evolution 升级走 AA 判定 + z-enforce 加 AA 检分支。误报 100% → 0%
-- **总文件数**：约 89 个（v0.8.24-26 +5: z-enforce.sh + z-enforce.yml + cross-repo-z-protocol.md + protocol-disambiguation.md + protocol-disambiguation.sh）
-- **总 commit 数**：约 60+（v0.8.24-26 +6: z-enforce 实做 + cross-repo-z-protocol 实做 + protocol-disambiguation 实做 + 4 README/索引升级）
+- **v0.8.27 多语言协议自发现 (AB 顿悟)**（7-30）：scripts/protocol-disambiguation.sh v0.8.27 升级 (380+ 行, 19/19 测试 pass) + 30-protocols/multilingual-protocol-self-discovery.md (9.3KB) + 4 语言 36 标记词 (中 16 + 英 10 + 日 7 + 西 3) + 协议名 13 核心 + 6 自发现 = 19 + 自适应距离阈值 (短 4/中 8/长 12) + 协议名格式 "中文|EN|JA" 多别名 + cross-repo-evolution 升级走 AB 判定。AA 协议全球化 + 零维护白名单
+- **总文件数**：约 91 个（v0.8.24-27 +7: z-enforce.sh + z-enforce.yml + cross-repo-z-protocol.md + protocol-disambiguation.md + protocol-disambiguation.sh + multilingual-protocol-self-discovery.md + cross-repo-evolution.sh 升级）
+- **总 commit 数**：约 61+（v0.8.24-27 +7: z-enforce + cross-repo-z-protocol + protocol-disambiguation + multilingual-protocol-self-discovery + 3 README/索引升级 + 1 cross-repo-evolution refresh）
 - **公开性**：public，欢迎讨论与共建
 
 ### 跨仓状态
@@ -110,6 +111,7 @@
 | **v0.8.24** | 2026-07-17 | Z 顿悟 CI enforcement 实做：scripts/z-enforce.sh (148 行) + workflow (push/PR/cron 触发, N_COMMITS env var)。仓内 feat(20-systems\|80-meta\|10-frameworks\|30-protocols) + fix(20-systems\|80-meta) commit 必补 evolution.md, 不补则阻断 push |
 | **v0.8.25** | 2026-07-18 | 跨仓 Z 协议 (Cross-Repo Z Protocol) 实做：scripts/cross-repo-evolution.sh (190 行, 4 仓 N=10 抽 3+ 段) + insights/cross-repo-evolution.md + z-enforce v0.8.25 跨仓检扩展。cognitive-systems 真正成 "5 仓元方法论总线" |
 | **v0.8.26** | 2026-07-24 | 协议 vs 形容词去歧 (AA 顿悟)：protocol-disambiguation.sh (12/12 测试 pass, 双白名单 + 距离阈值) + cross-repo-evolution 升级走 AA 判定 + z-enforce 加 AA 检分支。误报 100% → 0%, system-self 镜子原则 4 commits 全识别为真协议 |
+| **v0.8.27** | 2026-07-30 | 多语言协议自发现 (AB 顿悟)：protocol-disambiguation.sh v0.8.27 升级 (19/19 测试 pass, 4 语言 36 标记词 + 协议名多别名 + 自发现 + 自适应距离) + 30-protocols/multilingual-protocol-self-discovery.md (9.3KB, 8 段) + cross-repo-evolution 升级走 AB 判定。AA 协议全球化 + 零维护白名单 |
 | **v0.9** | 计划 | 多 writer 协调协议（顿悟 R 预测） |
 | **v0.10+** | 待定 | LLM/意识/跨方向交叉 |
 

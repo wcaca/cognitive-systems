@@ -1245,3 +1245,60 @@ P (auto-generate) → Q (跨仓同步) → R (元方法论) → S (空目录信�
 
 ### 沉淀人
 Mavis · 凌晨 5 点长程推进 (2026-07-24)
+
+---
+
+## v0.8.27 · AB 顿悟 · 多语言协议自发现 (2026-07-30 凌晨 5 点长程推进)
+
+### 历史脉络 (Lineage)
+P → ... → Z → Z' (跨仓) → AA (语义去歧) → **AB (多语言+自发现)**. 顿悟链延伸 1 步: AB 协议是 AA 协议的全球化扩展 + 零维护白名单升级, 形成"AA (中文静态) ⊂ AB (多语言+自发现)" 二层嵌套.
+
+### 基调 (Tone)
+扩展型. AA 协议解决了"中文 commit msg 协议名 vs 形容词", AB 协议解决"AA 协议的全球化 + 零维护". 不是新方向, 是已有方向的国际化扩展.
+
+### 做了什么 (What was done)
+- `scripts/protocol-disambiguation.sh` v0.8.27 升级 (380+ 行, bash 0 依赖, 5 子命令: classify / test / stats / scan / scan-stats)
+  - 协议标记词 16 → 36 (中 16 + 英 10 + 日 7 + 西 3)
+  - 协议名 12 → 19 (13 核心 + 6 自发现, 自发现扫 30-protocols/*.md H1 标题)
+  - 距离阈值 静态 8 → 自适应 (短文本 ≤30 字符 → 4, 中文本 → 8, 长文本 >80 字符 → 12)
+  - 协议名格式 "中文|EN|JA" 多别名, 跨语言 commit msg 兼容
+  - 测试 12 case → 19 case, 19/19 pass
+- `scripts/cross-repo-evolution.sh` v0.8.27 升级: 协议版本标签 v0.8.27 + 协议分布统计走 AB 判定 + 沉淀人更新
+- `30-protocols/multilingual-protocol-self-discovery.md` (9.3KB, 8 段): 多语言标记词 + 协议自发现 + 自适应距离 + 验证清单 + 跟既有协议关系 + 已知局限
+- `30-protocols/README.md`: 加 multilingual-protocol-self-discovery 索引项
+- evolution.md 段: 本段 (5 维度 + 历史 + tone + lineage, 跟 v0.8.22/v0.8.26 模板对齐)
+
+### 决策流程回顾（v0.4 新增视角）
+- **决策触发**: v0.8.26 protocol-disambiguation.md §已知未知 留 v0.8.27+ 三件 backlog (多语言 / 协议自发现 / 跨语言协议名). 7-29 backlog 确认
+- **决策标准**: 协议名白名单手动维护成本 = 1 commit/新协议 (1 文件 + 1 bash 数组行), 不可持续. 必须零维护
+- **决策信号**: v0.8.26 19/19 test pass, 但 12 case 全是中文, 英文 commit msg 0 case 覆盖
+- **决策复盘**:
+  - 选多语言 + 自发现 + 自适应阈值 三件一起做 (v0.8.27 一口气闭环)
+  - 不选 NLP 库 (commit msg 量小, NLP 库依赖重)
+  - 不选 LLM 判定 (commit msg 在 CI 跑, LLM 不稳定)
+  - 协议名格式 "中文|EN|JA" 是核心创新: 单一协议定义 + 多语言别名 + canonical 去重
+- **决策盲点**: 跨语言协议名 (日/西) + H2 章节扫描 + 协议白名单导出 留 v0.8.28+
+
+### 跑测 (How verified)
+- 沙箱 `bash scripts/protocol-disambiguation.sh test`: **19/19 cases pass** (真协议引用 6 + 形容词用法 4 + 边界 2 + 多语言 3 + 自适应阈值 3 + 自发现 1)
+- 沙箱 `bash scripts/protocol-disambiguation.sh scan-stats`: 13 核心 + 6 自发现 = 19 协议, 36 标记词
+- 沙箱 `bash scripts/protocol-disambiguation.sh stats 30`: 4 commit 含协议引用, 4 次 (system-self 4 commits 走 mirror principle 别名匹配)
+- 沙箱 `bash scripts/cross-repo-evolution.sh --n=30`: 6 段, 4 真协议 (镜子原则) + 2 形容词识别
+- 自适应阈值验证: 短句 (≤30 字符) 阈值 4 严判, 长句 (>80 字符) 阈值 12 宽判, 中句阈值 8 默认
+
+### 与同仓 M3b / Z / Z' / AA 协同
+- M3b 测"深度" (avg + 字符/commit) — Y 协议 (仓内)
+- Z (v0.8.24) 测"enforcement" (commit 改了 evolution.md) — 仓内 CI 阻断
+- Z' (v0.8.25) 测"跨仓总线" (4 仓 commit 是否进 insights/cross-repo-evolution.md) — 跨仓 extension
+- AA (v0.8.26) 测"语义" (协议名 vs 形容词, 中文 16 标记词) — 跨仓检的语义补丁
+- **AB (v0.8.27) 测"多语言+自发现" (36 标记词 + 协议名多别名 + 自适应阈值 + 零维护白名单) — AA 协议全球化扩展**
+- 关系: M3b (指标) ⊂ Z (仓内) ⊂ AA (中文语义) ⊂ AB (多语言+自发现) ⊂ Z' (跨仓), 五层嵌套
+
+### 同认知关联
+- v0.8.26 §已知未知 "多语言 / 协议自发现 / 跨语言" 留 v0.8.27+ — 本 commit 落地前 2 件, 第 3 件 (跨语言协议名) 一起做
+- v0.8.25 §路线图 v0.8.27+ 候选 (commit msg lint / pre-commit hook) — AB 协议为 hook 提供多语言判定基础
+- 跟 v0.8.23 三方飞轮: thoughtspace-notes / system-self / cognitive-systems 5 仓飞轮 — AB 协议让 cognitive-systems 自己更国际
+- 跟 v0.8.25 跨仓 Z 协议: AB 协议让 4 仓英文 commit msg 也能进 cross-repo-evolution 沉淀
+
+### 沉淀人
+Mavis · 凌晨 5 点长程推进 (2026-07-30)

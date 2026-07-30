@@ -127,7 +127,7 @@ for repo_path in "${REPOS[@]}"; do
     scope=$(echo "$subject" | sed -E 's/^(feat|fix)\(([^)]*)\).*/\2/')
     type=$(echo "$subject" | grep -oE "^(feat|fix)")
     date_short=$(echo "$date" | cut -c1-10)
-    # v0.8.26: 协议名 vs 形容词去歧 (AA 顿悟) — 用 protocol-disambiguation.sh 判定
+    # v0.8.27: 协议名 vs 形容词去歧 + 多语言 + 自发现 (AB 顿悟)
     triggered=$(bash "$SCRIPT_DIR/protocol-disambiguation.sh" classify "$subject $body" 2>/dev/null || echo "")
     if [ -z "$triggered" ]; then
       triggered="(无, 形容词用法)"
@@ -138,7 +138,7 @@ for repo_path in "${REPOS[@]}"; do
 |---|---|
 | 源仓 | $repo_name |
 | commit | \`$sha\` |
-| 触发协议 (v0.8.26 去歧) | $triggered |
+| 触发协议 (v0.8.27 去歧+多语言) | $triggered |
 | body 关键词 | $body_keywords |
 | 描述 | $(echo "$subject" | head -c 120) |
 
@@ -156,7 +156,7 @@ cat > "$OUTPUT" << EOF
 > **自动生成**: 运行 \`bash scripts/cross-repo-evolution.sh\` 重新生成
 > **不要手改**: 改各仓的 commit, 重跑脚本
 > **生成时间**: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
-> **协议版本**: v0.8.26 (Cross-Repo Z Protocol + Protocol Disambiguation)
+> **协议版本**: v0.8.27 (Cross-Repo Z Protocol + Protocol Disambiguation AB · 多语言+自发现)
 > **源仓数**: ${#REPOS[@]} (system-self / thoughtspace-notes / beauty-crm / agent-memory)
 > **每个仓 commit 数**: $N_COMMITS
 > **总段数**: $total_segments
@@ -187,7 +187,7 @@ cat >> "$OUTPUT" << 'EOF'
 |---|---|---|
 EOF
 
-# v0.8.26: 协议分布统计走 protocol-disambiguation 判定 (不再用 regex 误报)
+# v0.8.27: 协议分布统计走 protocol-disambiguation 判定 (AB · 多语言+自发现)
 # 统计所有真协议引用, 不计形容词用法
 all_true_refs=""
 for repo_path in "${REPOS[@]}"; do
@@ -204,7 +204,7 @@ done
 # 统计各协议出现次数
 if [ -n "$all_true_refs" ]; then
   echo "$all_true_refs" | tr ',' '\n' | sed 's/^ *//;s/ *$//' | grep -v '^$' | sort | uniq -c | sort -rn | head -20 | while read -r count proto; do
-    echo "| $proto | $count | (4 仓累计, v0.8.26 去歧) |" >> "$OUTPUT"
+    echo "| $proto | $count | (4 仓累计, v0.8.27 去歧+多语言) |" >> "$OUTPUT"
   done
 else
   echo "| (无) | 0 | - |" >> "$OUTPUT"
@@ -226,7 +226,7 @@ cat >> "$OUTPUT" << 'EOF'
 
 ---
 
-沉淀人: Mavis · 凌晨 5 点长程推进 (2026-07-24) · 跨仓 Z 协议 v0.8.26 (AA 顿悟: 协议 vs 形容词去歧)
+沉淀人: Mavis · 凌晨 5 点长程推进 (2026-07-30) · 跨仓 Z 协议 v0.8.27 (AB 顿悟: 多语言 + 协议自发现)
 EOF
 
 echo ""
