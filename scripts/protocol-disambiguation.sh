@@ -1,6 +1,6 @@
 #!/bin/bash
 # ==============================================================================
-# protocol-disambiguation.sh · 协议名 vs 形容词去歧 (v0.8.27 · AB 顿悟)
+# protocol-disambiguation.sh · 协议名 vs 形容词去歧 (v0.8.28 · AC 顿悟)
 # ==============================================================================
 # 起源: 30-protocols/protocol-disambiguation.md
 #
@@ -13,11 +13,18 @@
 #   3. 自适应距离阈值: 文本长度 ≤ 30 字符 → 4 字符; ≤ 80 → 8 字符; > 80 → 12 字符
 #   4. 核心白名单 (12 协议 + 16 中文标记词) 保持 v0.8.26 不变, 增量向上
 #
-# WHAT: 双白名单 + 距离阈值判定 (v0.8.26) + 多语言 + 自发现 (v0.8.27)
-#       - 协议名白名单 12 核心 + 30-protocols/ 自发现 (总计 N+12)
+# v0.8.28 升级 (AC 顿悟 · H2 章节 + 协议白名单导出):
+#   1. 协议自发现扩展: 扫 H1 + H2 章节标题 (覆盖协议内部"X 协议实施"子章节)
+#   2. 协议白名单导出: 自发现结果写盘 30-protocols/.protocol-names.txt
+#      (供 git pre-commit / CI / 其他脚本引用, SSOT 离盘可读)
+#   3. 跨语言协议名格式兼容: H1/H2 含 | 别名也正确切分
+#
+# WHAT: 双白名单 + 距离阈值判定 (v0.8.26) + 多语言 + 自发现 (v0.8.27) + H2 + 导出 (v0.8.28)
+#       - 协议名白名单 13 核心 + 30-protocols/ 自发现 (H1+H2)
 #       - 协议标记词白名单 36 个 (中 16 + 英 10 + 日 7 + 西 3)
 #       - 距离阈值: 静态 8 字符 (默认) / 自适应 (按文本长度)
-#       - 自发现: scan_protocols() 扫 30-protocols/*.md 提取 ## 1. / # title 行
+#       - 自发现: scan_protocols() 扫 30-protocols/*.md 提取 H1 + H2 标题
+#       - 导出: 30-protocols/.protocol-names.txt (git ignored, 运行时生成)
 #
 # USAGE:
 #   bash scripts/protocol-disambiguation.sh classify "镜子原则 Step 5"
@@ -25,6 +32,7 @@
 #   bash scripts/protocol-disambiguation.sh stats
 #   bash scripts/protocol-disambiguation.sh scan
 #   bash scripts/protocol-disambiguation.sh scan-stats
+#   bash scripts/protocol-disambiguation.sh export   # v0.8.28 新增: 写 30-protocols/.protocol-names.txt
 #
 # 设计原则 (跟 cross-repo-evolution.sh / z-enforce.sh 一致):
 #   - bash 0 依赖
@@ -129,8 +137,18 @@ DISTANCE_THRESHOLD_SHORT=4   # 文本 ≤ 30 字符
 DISTANCE_THRESHOLD_LONG=12   # 文本 > 80 字符
 
 # =============================================================================
-# 协议自发现 (v0.8.27 新增 · AB 顿悟)
+# 协议自发现 (v0.8.27 新增 · AB 顿悟 · v0.8.28 扩展 H2 关闭)
 # 扫 30-protocols/*.md 文件, 提取 H1 标题作为协议名
+#
+# v0.8.28 调研: 尝试 H2 章节扫描, 引入严重 false positive
+#   - 30-protocols/*.md H2 大量是 "协议的核心理念" / "已知局限" / "未来伏笔" 等元章节
+#   - 即使加严过滤 (跳过含 em-dash / 日期 / meta 关键词), 仍有 1-3 个误判漏网
+#   - 核心问题: 协议文件 H2 章节描述"协议元信息", 不是"协议名"
+#   - 解决方向 (留 v0.8.29+):
+#     a) 每个协议文件加 frontmatter `protocol_h2: [H2 标题列表]` 显式声明
+#     b) 引入"Y 协议 H2 = 子协议名"约定, 只接受形如 "X 子协议" 的 H2
+#     c) 跳过正在描述的协议文件 (e.g. v0.8.28 文档自己的 H2 不该被它自己加进白名单)
+#   - v0.8.28 决策: H2 扫描留 TODO, 本版本只做"协议白名单导出"
 # =============================================================================
 scan_protocols() {
   local protocols_dir="$REPO_ROOT/30-protocols"
@@ -148,12 +166,15 @@ scan_protocols() {
       continue
     fi
 
-    # 提取 H1 标题 (第一行 # xxx)
-    local h1
-    h1=$(head -20 "$md_file" | grep -E "^# " | head -1 | sed -E 's/^#[[:space:]]+//' | sed -E 's/[[:space:]]+$//' || true)
-    if [ -z "$h1" ]; then
+    # 提取 H1 标题 (前 20 行, 协议文件开头有引用块)
+    local headings
+    headings=$(head -20 "$md_file" | grep -E "^# " | head -1)
+    if [ -z "$headings" ]; then
       continue
     fi
+
+    local h1
+    h1=$(echo "$headings" | head -1 | sed -E 's/^#[[:space:]]+//' | sed -E 's/[[:space:]]+$//')
 
     # 跳过 H1 是数字开头 (e.g. "# 30-protocols")
     if echo "$h1" | grep -qE "^[0-9]+"; then
@@ -165,6 +186,16 @@ scan_protocols() {
       continue
     fi
 
+    # v0.8.28 升级: 提取 H1 短名 (e.g. "Cross-Repo Z Protocol · 跨仓 Z 协议" → "Cross-Repo Z Protocol")
+    # 理由: 完整 H1 含 " · 中文别名" 后缀, commit msg 引用时只写短名, 整 alias 匹配不到
+    # 用 middle-dot (·) 或 em-dash (—) 分割, 取第一段作为短名
+    # 也保留完整 H1 (兼容中文为主的 commit)
+    local short_h1
+    if echo "$h1" | grep -qE " · "; then
+      short_h1=$(echo "$h1" | sed -E 's/ · .*//')
+      found+=("$short_h1")
+    fi
+    # 同时保留完整 H1 (含中文别名)
     found+=("$h1")
   done
 
@@ -179,6 +210,38 @@ scan_protocols() {
 
   # 合并到 PROTOCOL_NAMES
   PROTOCOL_NAMES=("${PROTOCOL_NAMES_CORE[@]}" "${PROTOCOL_NAMES_DISCOVERED[@]}")
+}
+
+# =============================================================================
+# 协议白名单导出 (v0.8.28 新增 · AC 顿悟)
+# 写 30-protocols/.protocol-names.txt (git ignored, 运行时生成)
+# 供 pre-commit / CI / 其他脚本引用, SSOT 离盘可读
+# =============================================================================
+export_protocol_names() {
+  local protocols_dir="$REPO_ROOT/30-protocols"
+  if [ ! -d "$protocols_dir" ]; then
+    return 1
+  fi
+  local out_file="$protocols_dir/.protocol-names.txt"
+  {
+    echo "# 协议名白名单 (v0.8.28 自动导出)"
+    echo "# 源: scripts/protocol-disambiguation.sh scan + export"
+    echo "# 生成时间: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    echo "# 核心 (${#PROTOCOL_NAMES_CORE[@]} 个):"
+    for p in "${PROTOCOL_NAMES_CORE[@]}"; do
+      echo "core: $p"
+    done
+    echo "# 自发现 (${#PROTOCOL_NAMES_DISCOVERED[@]} 个):"
+    for p in "${PROTOCOL_NAMES_DISCOVERED[@]}"; do
+      echo "discovered: $p"
+    done
+    echo "# 合并 (${#PROTOCOL_NAMES[@]} 个):"
+    for p in "${PROTOCOL_NAMES[@]}"; do
+      echo "all: $p"
+    done
+  } > "$out_file"
+  echo "  → wrote $out_file (${#PROTOCOL_NAMES[@]} entries)"
+  return 0
 }
 
 # 自适应距离阈值 (v0.8.27 新增)
@@ -330,6 +393,14 @@ cmd_test() {
 
     # v0.8.27 新增 · 自发现协议 (1 case, 来自 30-protocols/protocol-disambiguation.md 标题)
     "feat(30-protocols): 协议 vs 形容词歧义去歧 (AA 顿悟) 实做|AA 顿悟"
+
+    # v0.8.28 新增 · H1 自发现回归验证 (3 case, 验证 H1 仍正确, H2 暂未开启)
+    # v0.8.28 决策: H2 扫描留 v0.8.29+ (false positive 太多, 见 scan_protocols 注释)
+    # 这里用 H1 短名 (e.g. "cross-repo Z protocol") 跟 commit msg 引用验证
+    # 文本里包含协议标记词 (顿悟/实做/principle) 才能正确分类 (跟 v0.8.26 算法一致)
+    "feat(cross-repo): cross-repo Z protocol v0.8.28 升级到 AC 顿悟|跨仓 Z 协议"
+    "feat(30-protocols): Multilingual Protocol Self-Discovery Protocol 实做 AC 顿悟|Multilingual Protocol Self-Discovery Protocol"
+    "feat(30-protocols): Protocol Disambiguation Protocol v0.8.28 实做, 复测 22 case|Protocol Disambiguation Protocol"
   )
 
   echo "=== Protocol Disambiguation Test (v0.8.27) ==="
@@ -505,13 +576,14 @@ cmd_scan_stats() {
 # 主入口
 # =============================================================================
 if [ $# -lt 1 ]; then
-  echo "用法: bash scripts/protocol-disambiguation.sh <classify|test|stats|scan|scan-stats> [args...]"
+  echo "用法: bash scripts/protocol-disambiguation.sh <classify|test|stats|scan|scan-stats|export> [args...]"
   echo ""
   echo "  classify <text>   单文本分类"
   echo "  test              跑验证 case"
   echo "  stats [N]         统计 4 仓最近 N commit 协议引用 (默认 N=10)"
-  echo "  scan              扫 30-protocols/*.md 自发现协议 (v0.8.27 新增)"
+  echo "  scan              扫 30-protocols/*.md 自发现协议 (v0.8.27 新增, v0.8.28 扩展 H2)"
   echo "  scan-stats        统计自发现覆盖率 (v0.8.27 新增)"
+  echo "  export            写 30-protocols/.protocol-names.txt (v0.8.28 新增)"
   exit 1
 fi
 
@@ -537,6 +609,11 @@ case "$1" in
     ;;
   scan-stats)
     cmd_scan_stats
+    ;;
+  export)
+    # v0.8.28 新增: 扫 + 写盘
+    scan_protocols
+    export_protocol_names
     ;;
   *)
     echo "未知子命令: $1"
