@@ -1,6 +1,10 @@
 #!/bin/bash
+# v0.8.29 LIB_GUARD: source 时跳过 main case block
+# 允许: source $SCRIPT (供 tests/test-h2-protocol-claim-0.8.29.sh 跑 placeholder 函数)
+# __PROTOCOL_DISAMBIG_LIB__=1 时, main case block 不会执行
 # ==============================================================================
-# protocol-disambiguation.sh · 协议名 vs 形容词去歧 (v0.8.28 · AC 顿悟)
+# ==============================================================================
+# protocol-disambiguation.sh · 协议名 vs 形容词去歧 (v0.8.29 · LIB_GUARD 模式)
 # ==============================================================================
 # 起源: 30-protocols/protocol-disambiguation.md
 #
@@ -241,6 +245,51 @@ export_protocol_names() {
     done
   } > "$out_file"
   echo "  → wrote $out_file (${#PROTOCOL_NAMES[@]} entries)"
+  return 0
+}
+
+# =============================================================================
+# 核心: scan_h2_protocol_claims (v0.8.29 调研参考, 不实做)
+# =============================================================================
+# v0.8.29 调研 H2 章节扫描 frontmatter 显式声明方案 (见
+# 30-protocols/h2-chapter-protocol-claim.md 详细调研结论).
+# 推荐: 方案 C - frontmatter protocol_names + 编辑距离约束.
+#
+# 留 v0.8.30+ 实做, 下面 3 个 placeholder 函数是 reference impl 骨架:
+#   - parse_protocol_frontmatter: 读 YAML 头 protocol_names 数组
+#   - h2_protocol_distance: H2 章节名 跟 frontmatter 协议名 字符级编辑距离
+#   - scan_h2_protocol_claims: 8 协议文件全扫 + 写 .protocol-h2-claims.txt
+#
+# v0.8.29 不调用这些 (避免污染 v0.8.28 稳定的 export 子命令).
+# v0.8.30+ 会完整实做 + 加 8 协议文件 frontmatter.
+# =============================================================================
+parse_protocol_frontmatter() {
+  local file="$1"
+  # 占位: v0.8.30+ 用 awk 读 --- 跟 --- 之间的 YAML, 解析 protocol_names
+  # 当前返回空, 跟 v0.8.28 行为完全一致
+  echo ""
+  return 0
+}
+
+h2_protocol_distance() {
+  local h2_title="$1"
+  local proto_name="$2"
+  # 占位: v0.8.30+ 推荐 spawn python -c "import Levenshtein; print(...)"
+  # 当前 fallback: 字符数差 + 包含子串检测
+  local h2_len=${#h2_title}
+  local proto_len=${#proto_name}
+  # 简单 fallback: 包含返回 0, 不包含返回大数
+  if [[ "$h2_title" == *"$proto_name"* ]]; then
+    echo "0"
+  else
+    echo "$((h2_len > proto_len ? h2_len : proto_len))"
+  fi
+  return 0
+}
+
+scan_h2_protocol_claims() {
+  # 占位: v0.8.30+ 全扫 8 协议文件, 写 30-protocols/.protocol-h2-claims.txt
+  # 当前不实做, 返回 0 兼容 v0.8.28 export 调用栈
   return 0
 }
 
@@ -575,6 +624,8 @@ cmd_scan_stats() {
 # =============================================================================
 # 主入口
 # =============================================================================
+# v0.8.29 LIB_GUARD: source 时跳过整个主入口块 (含 $# 检查 + case), 避免跑 default 打印用法
+if [ "${__PROTOCOL_DISAMBIG_LIB__:-0}" != "1" ]; then
 if [ $# -lt 1 ]; then
   echo "用法: bash scripts/protocol-disambiguation.sh <classify|test|stats|scan|scan-stats|export> [args...]"
   echo ""
@@ -587,6 +638,9 @@ if [ $# -lt 1 ]; then
   exit 1
 fi
 
+# v0.8.29 LIB_GUARD: source 时跳过整个 main case block, 避免跑 case default 打印用法
+# 用 if 包裹整个 case 块 (比 return 0 2>/dev/null 更稳, 子 shell source 不会 fallthrough)
+if [ "${__PROTOCOL_DISAMBIG_LIB__:-0}" != "1" ]; then
 case "$1" in
   classify)
     shift
@@ -620,3 +674,6 @@ case "$1" in
     exit 1
     ;;
 esac
+
+fi  # v0.8.29 LIB_GUARD close
+fi  # v0.8.29 main entry LIB_GUARD close
