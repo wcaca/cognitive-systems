@@ -1,3 +1,8 @@
+---
+protocol_names: ["Protocol Disambiguation Protocol","协议 vs 形容词去歧协议","AA 协议"]
+protocol_h2_match_distance: 30
+---
+
 # Protocol Disambiguation Protocol · 协议 vs 形容词去歧协议
 
 > [active] 2026-07-24 · v0.8.26 · AA 顿悟

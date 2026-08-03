@@ -1,3 +1,8 @@
+---
+protocol_names: ["Evolution-Sync Protocol","元方法论同步协议"]
+protocol_h2_match_distance: 30
+---
+
 # Evolution-Sync Protocol · 元方法论同步协议
 
 > [active] 2026-07-09 · v0.8.21 · X 顿悟的协议产物

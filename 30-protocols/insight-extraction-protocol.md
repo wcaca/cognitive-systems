@@ -1,3 +1,8 @@
+---
+protocol_names: ["Insight Extraction Protocol","顿悟提取协议"]
+protocol_h2_match_distance: 30
+---
+
 # Insight Extraction Protocol · 顿悟提取协议
 
 > [draft] 2026-07-04 · v0.8.16 · S 顿悟的实施产物

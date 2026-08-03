@@ -1,3 +1,8 @@
+---
+protocol_names: ["Export Protocol Names Protocol","协议白名单导出协议","AC 协议"]
+protocol_h2_match_distance: 30
+---
+
 # Export Protocol Names Protocol · 协议白名单导出协议
 
 > [active] 2026-08-01 · v0.8.28 · AC 顿悟

@@ -1,3 +1,8 @@
+---
+protocol_names: ["H2 Chapter Protocol Claim Protocol","H2 章节协议归属协议"]
+protocol_h2_match_distance: 30
+---
+
 # H2 Chapter Protocol Claim Protocol · H2 章节协议归属协议
 
 > [draft] 2026-08-02 · v0.8.29 · 调研结论 (不实做)

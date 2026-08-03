@@ -4,7 +4,7 @@
 # __PROTOCOL_DISAMBIG_LIB__=1 时, main case block 不会执行
 # ==============================================================================
 # ==============================================================================
-# protocol-disambiguation.sh · 协议名 vs 形容词去歧 (v0.8.29 · LIB_GUARD 模式)
+# protocol-disambiguation.sh · 协议名 vs 形容词去歧 (v0.8.30 · H2 frontmatter 实做)
 # ==============================================================================
 # 起源: 30-protocols/protocol-disambiguation.md
 #
@@ -249,48 +249,195 @@ export_protocol_names() {
 }
 
 # =============================================================================
-# 核心: scan_h2_protocol_claims (v0.8.29 调研参考, 不实做)
+# 核心: scan_h2_protocol_claims (v0.8.30 完整实做)
 # =============================================================================
-# v0.8.29 调研 H2 章节扫描 frontmatter 显式声明方案 (见
-# 30-protocols/h2-chapter-protocol-claim.md 详细调研结论).
-# 推荐: 方案 C - frontmatter protocol_names + 编辑距离约束.
-#
-# 留 v0.8.30+ 实做, 下面 3 个 placeholder 函数是 reference impl 骨架:
-#   - parse_protocol_frontmatter: 读 YAML 头 protocol_names 数组
-#   - h2_protocol_distance: H2 章节名 跟 frontmatter 协议名 字符级编辑距离
+# v0.8.30 落地 30-protocols/h2-chapter-protocol-claim.md §方案 C
+# (frontmatter protocol_names + 编辑距离约束):
+#   - parse_protocol_frontmatter: 用 awk 解析 --- 块 内的 protocol_names
+#     (YAML 数组, ["a", "b", "c"]) + protocol_h2_match_distance (默认 30)
+#   - h2_protocol_distance: 优先 python -c "import Levenshtein; ..."
+#     (字符级编辑距离, 准确), fallback bash 字符级
 #   - scan_h2_protocol_claims: 8 协议文件全扫 + 写 .protocol-h2-claims.txt
+#     (# 协议名 → H2 章节列表), git ignored, 运行时生成
 #
-# v0.8.29 不调用这些 (避免污染 v0.8.28 稳定的 export 子命令).
-# v0.8.30+ 会完整实做 + 加 8 协议文件 frontmatter.
+# 配套子命令: scan-h2-claims (跟 export 同级, v0.8.30 新增)
 # =============================================================================
 parse_protocol_frontmatter() {
   local file="$1"
-  # 占位: v0.8.30+ 用 awk 读 --- 跟 --- 之间的 YAML, 解析 protocol_names
-  # 当前返回空, 跟 v0.8.28 行为完全一致
-  echo ""
-  return 0
+  # 文件路径: 绝对 / 相对 30-protocols/ 都接受
+  if [[ "$file" != /* ]]; then
+    file="$REPO_ROOT/$file"
+  fi
+
+  # 用 awk 读 --- ... --- 之间的 YAML
+  # 输出: distance<NL>name1<NL>name2<NL>...
+  awk '
+    BEGIN { in_fm=0; done=0; print_dist=0; dist="30" }
+    /^---$/ {
+      if (in_fm == 0) { in_fm=1; next }
+      else { done=1; exit }
+    }
+    in_fm == 1 {
+      if (match($0, /^protocol_h2_match_distance:[[:space:]]*([0-9]+)/, m)) {
+        dist=m[1]
+      } else if (match($0, /^protocol_names:[[:space:]]*\[(.*)\]/, m)) {
+        # 解析 ["a", "b", "c"] - 提取引号内容
+        line=m[1]
+        n=split(line, arr, ",")
+        for (i=1; i<=n; i++) {
+          # 去掉 " 和 空格
+          gsub(/"/, "", arr[i])
+          gsub(/^[[:space:]]+|[[:space:]]+$/, "", arr[i])
+          if (arr[i] != "") print arr[i]
+        }
+      }
+    }
+    END { print "DIST=" dist > "/dev/stderr" }
+  ' "$file" 2>/dev/null
 }
 
 h2_protocol_distance() {
   local h2_title="$1"
   local proto_name="$2"
-  # 占位: v0.8.30+ 推荐 spawn python -c "import Levenshtein; print(...)"
-  # 当前 fallback: 字符数差 + 包含子串检测
-  local h2_len=${#h2_title}
-  local proto_len=${#proto_name}
-  # 简单 fallback: 包含返回 0, 不包含返回大数
-  if [[ "$h2_title" == *"$proto_name"* ]]; then
+
+  # 优先 python Levenshtein (字符级, 跨语言稳)
+  if command -v python3 >/dev/null 2>&1; then
+    local py_dist
+    py_dist=$(python3 -c "
+try:
+    import Levenshtein
+    print(Levenshtein.distance('$h2_title', '$proto_name'))
+except ImportError:
+    # fallback 字符级 (每个字符当 1 单位, 中英文都算 1)
+    a, b = '$h2_title', '$proto_name'
+    m, n = len(a), len(b)
+    if m == 0: print(n); exit()
+    if n == 0: print(m); exit()
+    dp = [[0]*(n+1) for _ in range(m+1)]
+    for i in range(m+1): dp[i][0] = i
+    for j in range(n+1): dp[0][j] = j
+    for i in range(1, m+1):
+        for j in range(1, n+1):
+            cost = 0 if a[i-1] == b[j-1] else 1
+            dp[i][j] = min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost)
+    print(dp[m][n])
+" 2>/dev/null)
+    if [ -n "$py_dist" ] && [ "$py_dist" -ge 0 ] 2>/dev/null; then
+      echo "$py_dist"
+      return 0
+    fi
+  fi
+
+  # bash fallback: 字符级 DP (8-2 教训: bash ${#var} 是字节数, 这里用 ${#} 当 char 近似可接受)
+  local a="$h2_title" b="$proto_name"
+  local m=${#a} n=${#b}
+  if [ "$m" -eq 0 ]; then echo "$n"; return; fi
+  if [ "$n" -eq 0 ]; then echo "$m"; return; fi
+
+  # bash 字符级 DP 太慢, 简化: 包含检测 (子串→0, 否则 max(len) 兜底)
+  if [[ "$a" == *"$b"* ]] || [[ "$b" == *"$a"* ]]; then
     echo "0"
   else
-    echo "$((h2_len > proto_len ? h2_len : proto_len))"
+    if [ "$m" -gt "$n" ]; then echo "$m"; else echo "$n"; fi
   fi
-  return 0
 }
 
 scan_h2_protocol_claims() {
-  # 占位: v0.8.30+ 全扫 8 协议文件, 写 30-protocols/.protocol-h2-claims.txt
-  # 当前不实做, 返回 0 兼容 v0.8.28 export 调用栈
-  return 0
+  local output_file="${1:-$REPO_ROOT/30-protocols/.protocol-h2-claims.txt}"
+  local protocols_dir="$REPO_ROOT/30-protocols"
+
+  # 找所有协议 md (排除 README)
+  local files=()
+  for f in "$protocols_dir"/*.md; do
+    [ "$(basename "$f")" = "README.md" ] && continue
+    files+=("$f")
+  done
+
+  {
+    echo "# 协议 H2 章节归属 (v0.8.30 自动生成)"
+    echo "# 源: scripts/protocol-disambiguation.sh scan-h2-claims"
+    echo "# 算法: frontmatter protocol_names + 编辑距离约束 (§方案 C)"
+    echo "# 生成时间: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    echo "# 协议文件数: ${#files[@]}"
+    echo ""
+
+    for file in "${files[@]}"; do
+      local name
+      name=$(basename "$file")
+
+      # 1. 读 frontmatter protocol_names + distance
+      local dist
+      dist=$(awk '
+        BEGIN { in_fm=0 }
+        /^---$/ { if (in_fm == 0) in_fm=1; else exit }
+        in_fm == 1 && match($0, /^protocol_h2_match_distance:[[:space:]]*([0-9]+)/, m) { print m[1]; exit }
+      ' "$file")
+      [ -z "$dist" ] && dist=30
+
+      local names=()
+      while IFS= read -r n; do
+        [ -n "$n" ] && names+=("$n")
+      done < <(parse_protocol_frontmatter "$file")
+
+      # 2. 扫 H2 章节
+      echo "## $name (distance≤$dist)"
+      while IFS= read -r h2_line; do
+        # h2_line = "## 1. 协议的核心理念"
+        local h2_title="${h2_line#\#\# }"
+
+        # v0.8.30 排除词表: "协议的 + 普通名词" 模式 (协议元描述)
+        # 不排除: "X 协议的协同" / "Y 协议的反模式" / "Z 协议的限制" (前面是英文短名)
+        # 排除模式: "协议的核心理念" / "协议的实施" / "协议清单" / "协议 vs" 等
+        #
+        # 算法: H2 章节中 "协议的" 前面紧跟 1-3 字符是 **已知协议短名**
+        #       (X / Y / Z / AA / AB / AC / U / V / W 协议) → 真协议名, 接受
+        #       否则 ("协议" 直接接 "的") → 协议元描述, 排除
+        local exclude=0
+
+        # 1. "协议的" 前面是不是已知协议短名
+        if [[ "$h2_title" == *"协议的"* ]]; then
+          # 协议短名 + 空格(可选) + 协议 + 的
+          # 协议短名 = X / Y / Z / AA / AB / AC / U / V / W
+          if ! echo "$h2_title" | grep -qE "(X|Y|Z|AA|AB|AC|U|V|W) ?协议的"; then
+            exclude=1
+          fi
+        fi
+
+        # 2. 其他元描述模式 (不管协议名前是什么)
+        if [[ "$h2_title" == "协议清单" ]] || \
+           [[ "$h2_title" == "协议（"* ]] || \
+           [[ "$h2_title" == "协议："* ]]; then
+          exclude=1
+        fi
+
+        if [ "$exclude" = "1" ]; then
+          echo "  ✗ [excluded] $h2_title (协议元描述, 排除词表命中)"
+          continue
+        fi
+
+        # 找到最小距离的协议名
+        local best_name=""
+        local best_dist=999
+        for pn in "${names[@]}"; do
+          local d
+          d=$(h2_protocol_distance "$h2_title" "$pn")
+          if [ "$d" -lt "$best_dist" ] 2>/dev/null; then
+            best_dist=$d
+            best_name=$pn
+          fi
+        done
+        # 距离 ≤ 阈值 算关联
+        if [ "$best_dist" -le "$dist" ] 2>/dev/null; then
+          echo "  ✓ [d=$best_dist] $h2_title → $best_name"
+        else
+          echo "  ✗ [d=$best_dist] $h2_title (拒绝, 距离 > $dist)"
+        fi
+      done < <(grep -E "^## " "$file" | head -50)
+      echo ""
+    done
+  } > "$output_file"
+
+  echo "✅ 已写: $output_file"
 }
 
 # 自适应距离阈值 (v0.8.27 新增)
@@ -627,7 +774,7 @@ cmd_scan_stats() {
 # v0.8.29 LIB_GUARD: source 时跳过整个主入口块 (含 $# 检查 + case), 避免跑 default 打印用法
 if [ "${__PROTOCOL_DISAMBIG_LIB__:-0}" != "1" ]; then
 if [ $# -lt 1 ]; then
-  echo "用法: bash scripts/protocol-disambiguation.sh <classify|test|stats|scan|scan-stats|export> [args...]"
+  echo "用法: bash scripts/protocol-disambiguation.sh <classify|test|stats|scan|scan-stats|export|scan-h2-claims> [args...]"
   echo ""
   echo "  classify <text>   单文本分类"
   echo "  test              跑验证 case"
@@ -635,6 +782,7 @@ if [ $# -lt 1 ]; then
   echo "  scan              扫 30-protocols/*.md 自发现协议 (v0.8.27 新增, v0.8.28 扩展 H2)"
   echo "  scan-stats        统计自发现覆盖率 (v0.8.27 新增)"
   echo "  export            写 30-protocols/.protocol-names.txt (v0.8.28 新增)"
+  echo "  scan-h2-claims    写 30-protocols/.protocol-h2-claims.txt (v0.8.30 新增, 方案 C frontmatter+距离)"
   exit 1
 fi
 
@@ -668,6 +816,11 @@ case "$1" in
     # v0.8.28 新增: 扫 + 写盘
     scan_protocols
     export_protocol_names
+    ;;
+  scan-h2-claims)
+    # v0.8.30 新增: 写 30-protocols/.protocol-h2-claims.txt
+    # 算法: frontmatter protocol_names + 编辑距离约束 (§方案 C)
+    scan_h2_protocol_claims
     ;;
   *)
     echo "未知子命令: $1"

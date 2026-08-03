@@ -1,3 +1,8 @@
+---
+protocol_names: ["Multilingual Protocol Self-Discovery Protocol","多语言协议自发现协议","AB 协议"]
+protocol_h2_match_distance: 30
+---
+
 # Multilingual Protocol Self-Discovery Protocol · 多语言协议自发现协议
 
 > [active] 2026-07-30 · v0.8.27 · AB 顿悟

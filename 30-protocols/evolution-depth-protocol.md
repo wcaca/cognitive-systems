@@ -1,3 +1,8 @@
+---
+protocol_names: ["Evolution 深度协议","Evolution Depth Protocol","Y 协议"]
+protocol_h2_match_distance: 30
+---
+
 # Evolution 深度协议 (Evolution Depth Protocol)
 
 **版本**: v0.8.22 (Y 顿悟)

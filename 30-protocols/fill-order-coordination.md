@@ -1,3 +1,8 @@
+---
+protocol_names: ["Fill-Order Coordination Protocol","填实顺序协调协议"]
+protocol_h2_match_distance: 30
+---
+
 # Fill-Order Coordination Protocol · 填实顺序协调协议
 
 > [draft] 2026-07-05 · v0.8.17 · T 顿悟的实施产物

@@ -1,3 +1,8 @@
+---
+protocol_names: ["跨仓 Z 协议","Cross-Repo Z Protocol","Z 协议"]
+protocol_h2_match_distance: 30
+---
+
 # Cross-Repo Z Protocol · 跨仓 Z 协议
 
 > [active] 2026-07-18 · v0.8.25 · Z 顿悟的跨仓扩展
