@@ -503,20 +503,31 @@ classify_text() {
         fi
 
         # 找最近的协议标记词 (向前向后 ± N 字符范围, v0.8.27 自适应阈值)
+        # v0.8.33 字符级: bash ${text:N:M} 是 byte-slicing, 多字节字符 (日文/西文
+        # 重音) 切到中间会成 garbage, 标记词 grep 不到. 改用 python 字符级切片.
+        # byte_pos (来自 grep -boF) -> char_pos, 按字符切 ± threshold 字符
         local threshold
         threshold=$(adaptive_threshold "$text")
+        local chunks
+        chunks=$(python3 -c "
+import sys
+text = sys.argv[1]
+byte_pos = int(sys.argv[2])
+alias_byte_len = int(sys.argv[3])
+threshold = int(sys.argv[4])
+# byte_pos -> char_pos: 累计 bytes 直到 >= byte_pos
+char_pos = len(text.encode('utf-8')[:byte_pos].decode('utf-8', errors='ignore'))
+alias_char_len = len(sys.argv[5])
+start_back = max(0, char_pos - threshold)
+end_fwd = min(len(text), char_pos + alias_char_len + threshold)
+back_chunk = text[start_back:char_pos + alias_char_len]
+fwd_chunk = text[char_pos:end_fwd]
+print(back_chunk + '\x1f' + fwd_chunk)
+" "$text" "$abs_pos" "${#alias}" "$threshold" "$alias" 2>/dev/null) || chunks=""
+        local back_chunk="${chunks%%$'\x1f'*}"
+        local fwd_chunk="${chunks#*$'\x1f'}"
         local nearby_marker=0
         for marker in "${PROTOCOL_MARKERS[@]}"; do
-          # 向前 N 字符范围找
-          local start_back=$((abs_pos - threshold))
-          if [ "$start_back" -lt 0 ]; then start_back=0; fi
-          local back_chunk="${text:$start_back:$((abs_pos - start_back + ${#alias}))}"
-
-          # 向后 N 字符范围找
-          local end_fwd=$((abs_pos + ${#alias} + threshold))
-          if [ "$end_fwd" -gt "${#text}" ]; then end_fwd="${#text}"; fi
-          local fwd_chunk="${text:$abs_pos:$((end_fwd - abs_pos))}"
-
           if echo "$back_chunk$fwd_chunk" | grep -qF "$marker"; then
             nearby_marker=1
             break
@@ -651,7 +662,13 @@ cmd_test() {
     # v0.8.32 新增 · 多语言别名 (3 case, 修 v0.8.27 文档承诺落地)
     "X insight step 1|顿悟"   # X insight 命中, 期待 X 顿悟
     "Y protocolo validación|顿悟"
-    "AA 頓悟 検証|"  # v0.8.33+ backlog: 日文"頓悟"与中文"顿悟" byte 不匹配 (substring 切字符)
+    "AA 頓悟 検証|"  # 日文"頓悟"与中文"顿悟" byte 不匹配, 白名单没日文 (v0.8.33+ backlog: 加 顿悟 日文别名)
+
+    # v0.8.33 新增 · 字符级切片 (修 byte-slicing 切多字节字符切到中间变 garbage)
+    # 之前用 bash ${text:N:M} 按 byte 切, "S プロトコル" 后面是 "の同期",
+    # 标记词 "同期" 跨 byte 边界, back_chunk 切到半个字符 grep 不到.
+    # 改 python 字符级后正常识别.
+    "feat(30-protocols): S プロトコルの同期テスト|S 协议"
   )
 
   echo "=== Protocol Disambiguation Test (v0.8.27) ==="
