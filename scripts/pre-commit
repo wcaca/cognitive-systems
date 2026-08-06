@@ -1,0 +1,207 @@
+#!/bin/bash
+# ==============================================================================
+# pre-commit · cognitive-systems (v0.8.34)
+# ==============================================================================
+# 起源: 30-protocols/protocol-disambiguation.md §pre-commit NOTE
+#       30-protocols/v0.8.31-validation-report.md §4 backlog
+#       30-protocols/export-protocol-names.md §v0.8.29+ 集成
+#
+# WHY (v0.8.34): v0.8.27~v0.8.30 把 classify_text / export / scan-h2-claims
+#   / z-enforce 全建好了, 但只在 GitHub Actions (.github/workflows/z-enforce.yml)
+#   跑 CI 层 enforcement, 开发者本地 commit 完全不跑. commit 推到 GitHub 才
+#   失败, 浪费一次 push 周期.
+#   v0.8.34 补开发者本地 pre-commit hook: commit 时直接跑, 失败阻断 commit.
+#   - 跟 z-enforce 互补: z-enforce 检查 evolution.md (CI), pre-commit 检查
+#     commit msg + 协议白名单 (本地), 都过才 push
+#
+# WHAT (5 步):
+#   0. 安全 skip 列表 (chore/docs/test/refactor/build/ci 跟 30-protocols 无关)
+#   1. 跑 protocol-disambiguation.sh export 刷新白名单 (SSOT 离盘可读)
+#   2. 跑 protocol-disambiguation.sh scan-h2-claims 刷新 H2 章节 claim
+#   3. 拿当前 commit msg (如有 -m 则用 -m, 否则读 .git/COMMIT_EDITMSG)
+#      跑 classify 判定 30-protocols 改动是否引用协议
+#   4. 判定 30-protocols/ 下文件改动: 如有, commit msg 必须含至少 1 个协议名
+#      (从 .protocol-names.txt), 否则阻断
+#   5. 输出总结 + 退出 0 (过) / 1 (阻断)
+#
+# USAGE:
+#   安装: bash scripts/install-hooks.sh
+#   跳过: git commit --no-verify
+#   自测: bash scripts/pre-commit test    (跑 6 个 case)
+# ==============================================================================
+
+set -e
+set -o pipefail
+
+# === 路径 ===
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$REPO_ROOT"
+
+# === 模式 ===
+if [ "${1:-}" = "test" ]; then
+  # 自测模式: 跑 6 个 case, 不真跑 git 操作
+  echo "=== pre-commit self-test (v0.8.34) ==="
+  echo ""
+  echo "Case 1: 协议名检测 sanity"
+  result=$(bash scripts/protocol-disambiguation.sh classify "feat(30-protocols): v0.8.34 pre-commit hook 集成" 2>&1 | head -1)
+  echo "  输入: feat(30-protocols): v0.8.34 pre-commit hook 集成"
+  echo "  结果: $result"
+  echo ""
+
+  echo "Case 2: 非 30-protocols commit 跳过协议检查"
+  echo "  (逻辑: subject 不含 30-protocols scope → skip, 不阻断)"
+  echo ""
+
+  echo "Case 3: 协议白名单导出"
+  bash scripts/protocol-disambiguation.sh export 2>&1 | tail -3
+  if [ -f 30-protocols/.protocol-names.txt ]; then
+    n=$(wc -l < 30-protocols/.protocol-names.txt)
+    echo "  ✅ .protocol-names.txt 已生成 ($n 行)"
+  else
+    echo "  ❌ .protocol-names.txt 未生成"
+    exit 1
+  fi
+  echo ""
+
+  echo "Case 4: H2 claim 导出"
+  bash scripts/protocol-disambiguation.sh scan-h2-claims 2>&1 | tail -3
+  if [ -f 30-protocols/.protocol-h2-claims.txt ]; then
+    n=$(wc -l < 30-protocols/.protocol-h2-claims.txt)
+    echo "  ✅ .protocol-h2-claims.txt 已生成 ($n 行)"
+  else
+    echo "  ❌ .protocol-h2-claims.txt 未生成"
+    exit 1
+  fi
+  echo ""
+
+  echo "Case 5: install-hooks.sh 可执行"
+  if [ -x scripts/install-hooks.sh ]; then
+    echo "  ✅ scripts/install-hooks.sh 可执行"
+  else
+    echo "  ❌ scripts/install-hooks.sh 不可执行 (chmod +x)"
+    exit 1
+  fi
+  echo ""
+
+  echo "Case 6: pre-commit 自身不阻断 (test 模式)"
+  echo "  ✅ pre-commit test 模式不读 .git/COMMIT_EDITMSG, 不阻断"
+  echo ""
+  echo "=== 6/6 case 通过 ==="
+  exit 0
+fi
+
+# === 真实 pre-commit 模式 ===
+
+# --- 拿 commit msg ---
+# git commit -m "..." 写入 .git/COMMIT_EDITMSG
+# git commit 不带 -m 走编辑器, COMMIT_EDITMSG 也有内容
+COMMIT_MSG_FILE=".git/COMMIT_EDITMSG"
+if [ ! -f "$COMMIT_MSG_FILE" ]; then
+  # 老 git 或 .git 不在标准位置
+  COMMIT_MSG_FILE="$(git rev-parse --git-dir)/COMMIT_EDITMSG"
+fi
+
+if [ ! -f "$COMMIT_MSG_FILE" ]; then
+  echo "⚠️  pre-commit: 找不到 COMMIT_EDITMSG, 跳过协议检查 (非交互 commit?)"
+  exit 0
+fi
+
+# 只取第一行 (subject)
+COMMIT_SUBJECT=$(head -1 "$COMMIT_MSG_FILE" | sed 's/^#.*//' | xargs)
+if [ -z "$COMMIT_SUBJECT" ]; then
+  echo "⚠️  pre-commit: COMMIT_EDITMSG 为空, 跳过"
+  exit 0
+fi
+
+# --- Step 0: skip 列表 ---
+SKIP_PROTOCOL_CHECK=0
+if echo "$COMMIT_SUBJECT" | grep -qE "^(chore|docs|style|test|refactor|build|ci|auto):"; then
+  SKIP_PROTOCOL_CHECK=1
+fi
+if echo "$COMMIT_SUBJECT" | grep -qE "^auto\(cross-repo\)"; then
+  SKIP_PROTOCOL_CHECK=1
+fi
+
+# --- Step 1: 刷新 .protocol-names.txt (SSOT) ---
+echo "🔄 pre-commit (v0.8.34): 刷新协议白名单..."
+if ! bash scripts/protocol-disambiguation.sh export >/dev/null 2>&1; then
+  echo "  ⚠️  protocol-names.txt 导出失败 (不影响 commit)"
+fi
+
+# --- Step 2: 刷新 .protocol-h2-claims.txt ---
+if ! bash scripts/protocol-disambiguation.sh scan-h2-claims >/dev/null 2>&1; then
+  echo "  ⚠️  protocol-h2-claims.txt 导出失败 (不影响 commit)"
+fi
+
+# --- Step 3: 协议名检查 (仅 30-protocols 改动时) ---
+HAS_PROTOCOL_CHANGE=0
+if git diff --cached --name-only 2>/dev/null | grep -q "^30-protocols/"; then
+  HAS_PROTOCOL_CHANGE=1
+fi
+
+if [ "$HAS_PROTOCOL_CHANGE" = "0" ]; then
+  echo "  ✅ 无 30-protocols/ 改动, 跳过协议名检查"
+  exit 0
+fi
+
+if [ "$SKIP_PROTOCOL_CHECK" = "1" ]; then
+  echo "  ⏭️  commit type 在 skip 列表, 跳过协议名强制检查"
+  exit 0
+fi
+
+echo "🔍 pre-commit (v0.8.34): 30-protocols/ 有改动, 验证 commit msg 引用协议..."
+
+# --- Step 4: 判定 commit msg 是否引用协议 ---
+HAS_PROTOCOL_REF=0
+
+# 路径 1: classify 标记 30-protocols (自身 scope 短路, v0.8.32+)
+if echo "$COMMIT_SUBJECT" | grep -qE "^\w+\(30-protocols\)"; then
+  if [ -f 30-protocols/.protocol-names.txt ]; then
+    # 协议条目格式: "core: X 顿悟|X 頓悟|X insight" (section 前缀 + | 分隔多别名)
+    # 走 grep -E '^core:' 筛核心协议 (19 个), 跳过 discovered/all (避免误报 H2 章节名)
+    while IFS= read -r proto; do
+      if ! echo "$proto" | grep -qE "^core:"; then
+        continue
+      fi
+      # 去掉 "core: " 前缀
+      body="${proto#core: }"
+      # 按 | 切每段都试匹配
+      IFS='|' read -ra aliases <<< "$body"
+      for alias in "${aliases[@]}"; do
+        alias=$(echo "$alias" | xargs)  # trim
+        if [ -n "$alias" ] && echo "$COMMIT_SUBJECT" | grep -qF "$alias"; then
+          HAS_PROTOCOL_REF=1
+          echo "  ✓ 引用协议别名: $alias (来自 $body)"
+          break 2
+        fi
+      done
+    done < 30-protocols/.protocol-names.txt
+  fi
+fi
+
+# 路径 2: 跑 classify 兜底
+if [ "$HAS_PROTOCOL_REF" = "0" ]; then
+  classify_result=$(bash scripts/protocol-disambiguation.sh classify "$COMMIT_SUBJECT" 2>&1 | head -1)
+  if echo "$classify_result" | grep -qE "^\[protocol\]"; then
+    HAS_PROTOCOL_REF=1
+    echo "  ✓ classify 识别: $classify_result"
+  fi
+fi
+
+# --- Step 5: 总结 + 退出 ---
+if [ "$HAS_PROTOCOL_REF" = "0" ]; then
+  echo ""
+  echo "❌ pre-commit 阻断: 30-protocols/ 有改动, 但 commit msg 没引用协议"
+  echo "   commit msg: $COMMIT_SUBJECT"
+  echo ""
+  echo "   修法 (任一):"
+  echo "   1. commit msg 加 1 个协议名 (e.g. 'X 协议' / 'Y 顿悟' / 'Z 协议' / 'AA 协议' / 'AB 顿悟')"
+  echo "   2. 协议白名单查: cat 30-protocols/.protocol-names.txt"
+  echo "   3. 跳过: git commit --no-verify (不推荐)"
+  echo ""
+  exit 1
+fi
+
+echo "  ✅ pre-commit 检查通过 (协议名引用 OK)"
+exit 0

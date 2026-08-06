@@ -1302,3 +1302,71 @@ P → ... → Z → Z' (跨仓) → AA (语义去歧) → **AB (多语言+自发
 
 ### 沉淀人
 Mavis · 凌晨 5 点长程推进 (2026-07-30)
+
+## v0.8.34 · 2026-08-06
+
+### 触发 (Trigger)
+v0.8.27 协议自发现 (Z 顿悟 enumeration) → v0.8.28 协议白名单导出 (.protocol-names.txt) →
+v0.8.30 H2 章节 frontmatter (scan-h2-claims) → v0.8.32 多语言别名 (FN 43%→8%) →
+v0.8.33 字符级切片 (修 byte-slicing 多字节切碎). 工具链完整, 但只在 GitHub Actions
+跑 CI 层 enforcement, 开发者本地 commit 完全不拦截, 推到 GitHub 才失败.
+
+### 目的 (Purpose)
+补开发者本地 pre-commit hook: commit 时直接拦截 30-protocols/ 改动 + commit msg
+未引用协议, 把 CI 反馈前移到本地. 跟 z-enforce (CI 层) 互补: 本地先过, CI 再过, push 才稳.
+
+### 做了什么 (What was done)
+- `scripts/pre-commit` (350+ 行, bash 0 依赖, 5 步 + test 自检):
+  - Step 0: skip 列表 (chore/docs/test/refactor/build/ci/auto(cross-repo) 不强制协议名)
+  - Step 1-2: 跑 protocol-disambiguation.sh export + scan-h2-claims 刷新白名单
+  - Step 3: 检测 30-protocols/ staged 改动 (有才走协议检查)
+  - Step 4: 判定协议名引用 — 路径 1 (feat(30-protocols) scope 短路 + core: 行多别名匹配)
+    路径 2 (classify 兜底, 含协议相关 commit)
+  - Step 5: 总结 + 退出 0/1
+- `scripts/install-hooks.sh` (110 行, 4 模式: install / uninstall / status / 自检):
+  - 软链 scripts/pre-commit → .git/hooks/pre-commit
+  - 幂等: 已是软链 + 指向正确跳过, 否则备份原 hook 为 .pre-commit.bak
+  - chmod +x 双保险
+  - 跑 pre-commit test 验证链路, 输出 git config core.hooksPath 团队统一建议
+- `scripts/pre-commit test` 自检 6 case (协议名 sanity / skip 逻辑 / 导出 / H2 claim / install-hooks / 自身不阻断)
+- `.gitignore`: 加 30-protocols/.protocol-names.txt + .protocol-h2-claims.txt (运行时生成, 不入版本)
+- evolution.md 段: 本段 (5 维度 + 历史 + tone + lineage, 跟 v0.8.27/v0.8.33 模板对齐)
+
+### 决策流程回顾
+- **决策触发**: v0.8.27 §已知未知 留 pre-commit hook (v0.8.29+ 集成), v0.8.31 验证报告 §4 backlog 复提, 8-6 凌晨长程 sprint 3 闭环
+- **决策标准**: CI 反馈太晚 (push 才知), 本地拦截前置
+- **决策信号**: 工具链 v0.8.27~v0.8.33 完整 (export + scan-h2-claims + classify + z-enforce), 缺本地层
+- **决策复盘**:
+  - 选 install-hooks.sh 软链 (而不是 cp 复制) — 后续改 scripts/pre-commit 自动同步
+  - 不选 core.hooksPath=.githooks/ (团队统一) — 先给 opt-in, 后续观察使用率再决定
+  - core: 行作为协议白名单源 (不走 discovered/all) — discovered 是 H2 章节名, 易误报
+  - 路径 1 + 路径 2 双源 (scope 短路 + classify 兜底) — 兼容 feat(30-protocols) 和其他 scope
+- **决策盲点**: 跨仓 commit 拦截 (本 hook 仓内) — 留 v0.8.35+ 走 cross-repo-evolution hook
+
+### 跑测 (How verified)
+- 沙箱 `bash scripts/pre-commit test`: **6/6 case pass** (协议名 sanity + skip 逻辑 + 导出 80 行 + H2 claim 95 行 + install-hooks 可执行 + 自身不阻断)
+- 沙箱 `bash scripts/pre-commit` 真 commit msg:
+  - `feat(30-protocols): v0.8.34 AB 顿悟 多语言` → ✅ 引用 AB 顿悟 别名, 通过
+  - `feat(30-protocols): v0.8.34 Z 顿悟 enforcement` → ✅ 引用 Z 顿悟 别名, 通过
+  - `feat(30-protocols): v0.8.34 no proto` → ❌ 阻断, commit msg 没引用协议
+  - `test commit without protocol ref` → ❌ 阻断
+- 沙箱 `bash scripts/install-hooks.sh`: 软链 .git/hooks/pre-commit → ../../scripts/pre-commit, 跑 test 验证通过
+- 沙箱 `git commit --no-verify`: 跳过 hook, 不阻断 (escape hatch)
+
+### 与同仓 M3b / Z / Z' / AA / AB 协同
+- M3b 测"深度" (avg + 字符/commit) — Y 协议 (仓内)
+- Z (v0.8.24) 测"enforcement" (commit 改了 evolution.md) — 仓内 CI 阻断
+- Z' (v0.8.25) 测"跨仓总线" (4 仓 commit 是否进 insights/cross-repo-evolution.md) — 跨仓 extension
+- AA (v0.8.26) 测"语义" (协议名 vs 形容词, 中文 16 标记词) — 跨仓检的语义补丁
+- AB (v0.8.27) 测"多语言+自发现" (36 标记词 + 协议名多别名 + 自适应阈值 + 零维护白名单) — AA 全球化扩展
+- **v0.8.34 测"本地 enforcement" (scripts/pre-commit 拦截 30-protocols 改动未引用协议) — Z 协议本地化前置**
+- 关系: M3b (指标) ⊂ Z (仓内 CI) ⊂ v0.8.34 (本地) ⊂ AA (中文语义) ⊂ AB (多语言+自发现) ⊂ Z' (跨仓), 六层嵌套
+
+### 同认知关联
+- v0.8.27 §已知未知 "pre-commit hook 集成" 留 v0.8.29+ — 8-6 凌晨闭环, 比预计晚 5 sprint
+- v0.8.31 验证报告 §4 backlog 4 月留 — 8-6 凌晨 sprint 3 闭环
+- v0.8.32 §触发 (协议自发现扩展) + v0.8.33 §WHY (字符级切片) 沉淀的工具链是 v0.8.34 前提
+- 跟 v0.8.30 H2 chapter protocol claim (方案 C frontmatter+距离) — v0.8.34 pre-commit 调 scan-h2-claims 刷新
+
+### 沉淀人
+Mavis · 凌晨 5 点长程推进 (2026-08-06)
